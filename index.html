@@ -460,6 +460,14 @@
       transition: background 0.4s;
     }
     .work-card:hover { background: var(--ink-muted); }
+    a.work-card { display: block; text-decoration: none; color: inherit; }
+    .work-card__view {
+      display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 1.4rem;
+      font-size: 0.55rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); border-bottom: 1px solid rgba(201,146,42,0.3); padding-bottom: 2px;
+      transition: border-color 0.2s, gap 0.2s;
+    }
+    a.work-card:hover .work-card__view { border-color: var(--gold); gap: 0.7rem; }
 
     .work-card__status {
       display: inline-flex; align-items: center; gap: 0.4rem;
@@ -944,6 +952,17 @@
     </div>
 
     <div class="work-grid stagger">
+
+      <a href="flower_shop.html" class="work-card">
+        <div class="work-card__status">
+          <div class="work-card__status-dot pulse"></div>
+          Live Mockup
+        </div>
+        <h3 class="work-card__title">Pétale — Luxury Florist</h3>
+        <p class="work-card__desc">Full homepage redesign for a high-end Dubai flower shop. Dark cinematic aesthetic, real photography, custom cursor, parallax hero, and animated marquee gallery.</p>
+        <span class="work-card__view">View Project →</span>
+        <div class="work-card__corner"></div>
+      </a>
 
       <div class="work-card">
         <div class="work-card__status">

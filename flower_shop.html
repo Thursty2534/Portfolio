@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pétale — Where Nature Becomes Art · Dubai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ══ Tokens ══ */
+    :root {
+      --black:     #060810;
+      --deep:      #0B1220;
+      --navy:      #0F1A2A;
+      --forest:    #0C1C14;
+      --gold:      #C4953A;
+      --gold-lt:   #E8B84B;
+      --gold-glow: rgba(196,149,58,0.25);
+      --blue:      #4DC3F7;
+      --cream:     #F0EDE5;
+      --ivory:     #FAF9F6;
+      --powder:    #B8D4E8;
+      --muted:     rgba(240,237,229,0.5);
+      --ease:      cubic-bezier(0.22,1,0.36,1);
+    }
+
+    /* ══ Reset ══ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Jost', sans-serif; background: var(--black); color: var(--cream); overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+    /* ══ Custom Cursor ══ */
+    #cursor-dot {
+      position: fixed; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--gold); pointer-events: none; z-index: 10000;
+      transform: translate(-50%,-50%);
+      transition: transform 0.1s ease, width 0.3s var(--ease), height 0.3s var(--ease), background 0.3s;
+    }
+    #cursor-ring {
+      position: fixed; width: 42px; height: 42px; border-radius: 50%;
+      border: 1px solid rgba(196,149,58,0.55);
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width 0.4s var(--ease), height 0.4s var(--ease), border-color 0.3s, opacity 0.3s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #cursor-ring span {
+      font-size: 0.38rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gold); opacity: 0; transition: opacity 0.3s;
+    }
+    body.img-hover #cursor-dot { width: 4px; height: 4px; }
+    body.img-hover #cursor-ring { width: 90px; height: 90px; border-color: rgba(196,149,58,0.8); }
+    body.img-hover #cursor-ring span { opacity: 1; }
+    body.btn-hover #cursor-dot { background: var(--black); transform: translate(-50%,-50%) scale(2); }
+    body.btn-hover #cursor-ring { width: 58px; height: 58px; background: var(--gold-glow); border-color: var(--gold); }
+
+    /* ══ Preloader ══ */
+    #preloader {
+      position: fixed; inset: 0; z-index: 9998;
+      background: var(--black);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.9s var(--ease);
+    }
+    .pre-content { text-align: center; }
+    .pre-name {
+      font-family: 'Cormorant Garamond', serif; font-size: 3.8rem;
+      font-weight: 300; letter-spacing: 0.35em; color: var(--cream);
+      opacity: 0; animation: preReveal 1.8s var(--ease) 0.2s forwards;
+    }
+    .pre-line {
+      width: 0; height: 1px; background: var(--gold);
+      margin: 1rem auto 0;
+      animation: preRule 1.2s ease 0.9s forwards;
+    }
+    @keyframes preReveal { from { opacity:0; letter-spacing:0.55em } to { opacity:1; letter-spacing:0.35em } }
+    @keyframes preRule   { from { width:0 } to { width:60px } }
+
+    /* ══ Floating petals ══ */
+    .petal-particle {
+      position: fixed; pointer-events: none; z-index: 1;
+      border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
+      animation: petalDrift linear forwards;
+    }
+    @keyframes petalDrift {
+      0%   { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 0.4; }
+      100% { transform: translateY(-10vh) translateX(40px) rotate(540deg); opacity: 0; }
+    }
+
+    /* ══ Layout ══ */
+    .wrap  { max-width: 1200px; margin: 0 auto; padding: 0 3rem; }
+    .sp    { padding: 110px 0; }
+    .sp-sm { padding: 65px 0; }
+
+    /* ══ Type ══ */
+    .tag {
+      font-size: 0.57rem; font-weight: 400; letter-spacing: 0.55em; text-transform: uppercase;
+      display: block; margin-bottom: 1rem;
+    }
+    .tag--gold  { color: var(--gold); }
+    .tag--blue  { color: var(--blue); }
+    .tag--cream { color: rgba(240,237,229,0.45); }
+
+    .h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 400; line-height: 1.08;
+    }
+    .h2i  { font-style: italic; }
+    .h2--cream  { color: var(--cream); }
+    .h2--light  { color: var(--ivory); }
+    .h2--gold   { color: var(--gold); }
+
+    .gold-rule { width: 55px; height: 1px; background: var(--gold); margin: 1.8rem 0; }
+
+    /* ══ Buttons ══ */
+    .btn {
+      display: inline-block; font-family: 'Jost', sans-serif;
+      font-size: 0.6rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase;
+      padding: 0.95rem 2.4rem; transition: all 0.3s var(--ease);
+    }
+    .btn-gold { background: var(--gold); color: var(--black); border: 1px solid var(--gold); }
+    .btn-gold:hover { background: var(--gold-lt); border-color: var(--gold-lt); }
+    .btn-out { background: transparent; color: var(--cream); border: 1px solid rgba(240,237,229,0.35); }
+    .btn-out:hover { border-color: var(--cream); }
+    .btn-out-gold { background: transparent; color: var(--gold); border: 1px solid rgba(196,149,58,0.4); }
+    .btn-out-gold:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+
+    /* ══ Reveal system ══ */
+    .reveal, .rev-left, .rev-right, .rev-up {
+      opacity: 0; transition: opacity 0.9s var(--ease), transform 0.9s var(--ease), filter 0.9s ease;
+    }
+    .reveal, .rev-up   { transform: translateY(40px); filter: blur(4px); }
+    .rev-left  { transform: translateX(-50px); }
+    .rev-right { transform: translateX(50px); }
+    .reveal.vis, .rev-left.vis, .rev-right.vis, .rev-up.vis {
+      opacity: 1; transform: translate(0); filter: blur(0);
+    }
+    .stagger > * {
+      opacity: 0; transform: translateY(30px); filter: blur(3px);
+      transition: opacity 0.75s var(--ease), transform 0.75s var(--ease), filter 0.75s ease;
+    }
+    .stagger.vis > *:nth-child(1) { opacity:1;transform:none;filter:none;transition-delay:.00s }
+    .stagger.vis > *:nth-child(2) { opacity:1;transform:none;filter:none;transition-delay:.10s }
+    .stagger.vis > *:nth-child(3) { opacity:1;transform:none;filter:none;transition-delay:.20s }
+    .stagger.vis > *:nth-child(4) { opacity:1;transform:none;filter:none;transition-delay:.30s }
+    .stagger.vis > *:nth-child(5) { opacity:1;transform:none;filter:none;transition-delay:.40s }
+    .stagger.vis > *:nth-child(6) { opacity:1;transform:none;filter:none;transition-delay:.50s }
+
+    /* ══ NAVIGATION ══ */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 800;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.8rem 3rem;
+      transition: background 0.4s ease, padding 0.3s ease, border-color 0.4s ease, backdrop-filter 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+    #nav.on {
+      background: rgba(6,8,16,0.85); backdrop-filter: blur(20px);
+      border-color: rgba(196,149,58,0.15); padding: 1.1rem 3rem;
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 300;
+      letter-spacing: 0.22em; color: var(--cream);
+    }
+    .nav-links { display: flex; align-items: center; gap: 2.8rem; }
+    .nav-links a {
+      font-size: 0.58rem; font-weight: 400; letter-spacing: 0.22em; text-transform: uppercase;
+      color: rgba(240,237,229,0.6); transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
+      background: var(--gold); transition: width 0.3s var(--ease);
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      font-size: 0.58rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase;
+      padding: 0.6rem 1.4rem; border: 1px solid rgba(196,149,58,0.45); color: var(--gold);
+      transition: all 0.25s;
+    }
+    .nav-cta:hover { background: var(--gold); color: var(--black); }
+    .nav-ham { display: none; flex-direction: column; gap: 5px; background: none; border: none; }
+    .nav-ham span { display: block; width: 22px; height: 1px; background: var(--cream); transition: all 0.3s; }
+
+    /* ══ HERO ══ */
+    .hero {
+      min-height: 100svh; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--black);
+    }
+    .hero__bg {
+      position: absolute; inset: 0; z-index: 0;
+      will-change: transform;
+    }
+    .hero__bg img {
+      object-position: center top;
+      filter: brightness(0.55) saturate(1.2);
+    }
+    .hero__vignette {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 100% at 50% 50%, transparent 30%, rgba(6,8,16,0.7) 100%),
+        linear-gradient(to top, rgba(6,8,16,0.9) 0%, transparent 40%),
+        linear-gradient(to bottom, rgba(6,8,16,0.5) 0%, transparent 30%);
+    }
+    .hero__glow {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: radial-gradient(ellipse 60% 50% at 50% 45%, rgba(77,195,247,0.07) 0%, transparent 70%);
+    }
+    .hero__inner {
+      position: relative; z-index: 2; text-align: center;
+      padding: 0 2rem; max-width: 900px;
+    }
+    .hero__eyebrow {
+      font-size: 0.57rem; letter-spacing: 0.6em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.8s var(--ease) 0.3s forwards;
+    }
+    .hero__h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 8vw, 7.5rem); font-style: italic; font-weight: 300;
+      line-height: 1.0; color: var(--cream);
+      text-shadow: 0 4px 40px rgba(77,195,247,0.1);
+    }
+    .hero__h1 .char {
+      display: inline-block;
+      opacity: 0; transform: translateY(30px);
+      animation: charIn 0.7s var(--ease) forwards;
+    }
+    .hero__sub {
+      font-size: 1rem; font-weight: 300; color: rgba(240,237,229,0.55);
+      letter-spacing: 0.06em; line-height: 1.9; margin-top: 1.5rem;
+      opacity: 0; animation: fadeUp 0.8s var(--ease) 1.4s forwards;
+    }
+    .hero__rule {
+      width: 1px; height: 70px; background: linear-gradient(to bottom, var(--gold), transparent);
+      margin: 2.5rem auto;
+      opacity: 0; animation: fadeIn 0.8s ease 1.7s forwards;
+    }
+    .hero__actions {
+      display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.8s var(--ease) 2s forwards;
+    }
+    .hero__scroll {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+      opacity: 0; animation: fadeIn 0.8s ease 2.4s forwards;
+    }
+    .hero__scroll span {
+      font-size: 0.52rem; letter-spacing: 0.44em; text-transform: uppercase; color: rgba(240,237,229,0.35);
+    }
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, rgba(196,149,58,0.7), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes charIn    { from { opacity:0; transform:translateY(30px) } to { opacity:1; transform:translateY(0) } }
+    @keyframes fadeUp    { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
+    @keyframes fadeIn    { from { opacity:0 } to { opacity:1 } }
+    @keyframes scrollPulse { 0%,100% { opacity:0.4; transform:scaleY(1) } 50% { opacity:1; transform:scaleY(1.2) } }
+
+    /* ══ MARQUEE ══ */
+    .marquee {
+      background: var(--black); padding: 4px 0; overflow: hidden;
+      border-top: 1px solid rgba(196,149,58,0.1);
+      border-bottom: 1px solid rgba(196,149,58,0.1);
+    }
+    .marquee__track {
+      display: flex; gap: 4px; width: max-content;
+      animation: marqueeRoll 50s linear infinite;
+    }
+    .marquee__track:hover { animation-play-state: paused; }
+    .marquee__item {
+      width: 200px; height: 260px; flex-shrink: 0; overflow: hidden; position: relative;
+    }
+    .marquee__item img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s var(--ease), filter 0.4s ease;
+      filter: brightness(0.75) saturate(1.1);
+    }
+    .marquee__item:hover img { transform: scale(1.06); filter: brightness(0.95) saturate(1.3); }
+    .marquee__item::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(6,8,16,0.5) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    @keyframes marqueeRoll { from { transform:translateX(0) } to { transform:translateX(-50%) } }
+
+    /* ══ FEATURED ARRANGEMENTS ══ */
+    .featured { background: var(--forest); }
+    .featured__head { margin-bottom: 4rem; }
+    .feat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; }
+    .feat-card {
+      position: relative; overflow: hidden;
+      background: var(--deep);
+    }
+    .feat-card__img {
+      aspect-ratio: 3/4; overflow: hidden; position: relative;
+    }
+    .feat-card__img img {
+      transition: transform 0.7s var(--ease), filter 0.5s ease;
+      filter: brightness(0.8) saturate(1.15);
+    }
+    .feat-card:hover .feat-card__img img { transform: scale(1.07); filter: brightness(0.95) saturate(1.3); }
+    .feat-card__overlay {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(to top, rgba(6,8,16,0.95) 0%, rgba(6,8,16,0.2) 60%, transparent 100%);
+    }
+    .feat-card__body {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+      padding: 1.6rem 1.4rem;
+      transform: translateY(48px);
+      transition: transform 0.45s var(--ease);
+    }
+    .feat-card:hover .feat-card__body { transform: translateY(0); }
+    .feat-card__name {
+      font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 1.3rem;
+      color: var(--cream); margin-bottom: 0.4rem;
+    }
+    .feat-card__desc { font-size: 0.76rem; font-weight: 300; color: rgba(240,237,229,0.6); line-height: 1.65; margin-bottom: 0.9rem; }
+    .feat-card__foot { display: flex; align-items: center; justify-content: space-between; }
+    .feat-card__price { font-size: 0.8rem; font-weight: 400; color: var(--gold); }
+    .feat-card__link {
+      font-size: 0.53rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold); border-bottom: 1px solid rgba(196,149,58,0.4); padding-bottom: 1px;
+    }
+    /* Top gold shimmer line on hover */
+    .feat-card::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 0; height: 2px;
+      background: var(--gold); z-index: 3;
+      transition: width 0.5s var(--ease);
+    }
+    .feat-card:hover::before { width: 100%; }
+
+    /* ══ OCCASIONS ══ */
+    .occasions { background: var(--black); }
+    .occ-head { text-align: center; margin-bottom: 4.5rem; }
+    .occ-head p { font-size: 0.88rem; font-weight: 300; color: var(--muted); max-width: 420px; margin: 1rem auto 0; line-height: 1.8; }
+    .occ-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; }
+    .occ-card {
+      position: relative; overflow: hidden; aspect-ratio: 4/3;
+      background: var(--deep);
+    }
+    .occ-card__img {
+      position: absolute; inset: 0;
+      transition: transform 0.7s var(--ease), filter 0.5s ease;
+      filter: brightness(0.5) saturate(1.1);
+    }
+    .occ-card:hover .occ-card__img { transform: scale(1.06); filter: brightness(0.65) saturate(1.3); }
+    .occ-card__grad {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(6,8,16,0.7) 0%, rgba(6,8,16,0.1) 100%);
+      transition: background 0.4s ease;
+    }
+    .occ-card:hover .occ-card__grad { background: linear-gradient(135deg, rgba(6,8,16,0.5) 0%, rgba(6,8,16,0.05) 100%); }
+    .occ-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--gold); transform: scaleX(0); transform-origin: left; z-index: 3;
+      transition: transform 0.45s var(--ease);
+    }
+    .occ-card:hover::before { transform: scaleX(1); }
+    .occ-card__body {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+      padding: 2rem 2rem 1.8rem;
+    }
+    .occ-num { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 2.2rem; font-weight: 300; color: rgba(196,149,58,0.22); line-height: 1; display: block; margin-bottom: 0.3rem; }
+    .occ-name { font-family: 'Cormorant Garamond', serif; font-size: 1.45rem; font-weight: 400; color: var(--cream); margin-bottom: 0.5rem; }
+    .occ-desc { font-size: 0.77rem; font-weight: 300; color: rgba(240,237,229,0.52); line-height: 1.7;
+      max-height: 0; overflow: hidden; transition: max-height 0.4s var(--ease); }
+    .occ-card:hover .occ-desc { max-height: 80px; }
+    .occ-link { display: inline-block; margin-top: 0.9rem; font-size: 0.55rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); }
+
+    /* ══ LIVING GARDEN (quote/hero image section) ══ */
+    .living {
+      position: relative; overflow: hidden;
+      min-height: 80vh; display: flex; align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .living__bg { position: absolute; inset: 0; z-index: 0; }
+    .living__bg img { filter: brightness(0.4) saturate(1.2); object-position: center 30%; }
+    .living__overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: radial-gradient(ellipse 70% 100% at 50% 50%, rgba(6,8,16,0.4) 0%, rgba(6,8,16,0.85) 100%);
+    }
+    .living__inner { position: relative; z-index: 2; max-width: 780px; padding: 0 2rem; }
+    .living__mark {
+      font-family: 'Cormorant Garamond', serif; font-size: 8rem; font-weight: 300; line-height: 0.8;
+      color: rgba(196,149,58,0.18); display: block; margin-bottom: 0.5rem;
+    }
+    .living__quote {
+      font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
+      font-size: clamp(1.5rem, 3vw, 2.4rem); color: var(--cream); line-height: 1.6;
+    }
+    .living__attr { font-size: 0.57rem; letter-spacing: 0.46em; text-transform: uppercase; color: var(--gold); margin-top: 2.2rem; display: block; }
+
+    /* ══ NATURE SPOTLIGHT ══ */
+    .spotlight { background: var(--deep); }
+    .spotlight__grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; }
+    .spot-item { position: relative; overflow: hidden; aspect-ratio: 1; }
+    .spot-item img {
+      transition: transform 0.7s var(--ease), filter 0.5s;
+      filter: brightness(0.75) saturate(1.1);
+    }
+    .spot-item:hover img { transform: scale(1.08); filter: brightness(0.9) saturate(1.4); }
+    .spot-item__label {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+      padding: 1.5rem 1.4rem;
+      background: linear-gradient(to top, rgba(6,8,16,0.9) 0%, transparent 100%);
+      transform: translateY(100%); transition: transform 0.4s var(--ease);
+    }
+    .spot-item:hover .spot-item__label { transform: translateY(0); }
+    .spot-item__name { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 400; color: var(--cream); }
+    .spot-item__tag  { font-size: 0.53rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.3rem; display: block; }
+
+    /* ══ DELIVERY ══ */
+    .delivery { background: var(--forest); border-top: 1px solid rgba(196,149,58,0.1); }
+    .del-head { text-align: center; margin-bottom: 4.5rem; }
+    .del-head p { font-size: 0.88rem; font-weight: 300; color: var(--muted); max-width: 400px; margin: 1rem auto 0; line-height: 1.8; }
+    .del-grid { display: grid; grid-template-columns: repeat(3,1fr); }
+    .del-col { padding: 3.5rem 3rem; text-align: center; border-right: 1px solid rgba(196,149,58,0.15); transition: background 0.3s ease; }
+    .del-col:last-child { border-right: none; }
+    .del-col:hover { background: rgba(196,149,58,0.04); }
+    .del-icon-wrap {
+      width: 56px; height: 56px; border: 1px solid rgba(196,149,58,0.28);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 1.8rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .del-col:hover .del-icon-wrap { border-color: var(--gold); box-shadow: 0 0 20px rgba(196,149,58,0.15); }
+    .del-icon { font-size: 1.4rem; color: var(--gold); }
+    .del-name { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; color: var(--cream); margin-bottom: 0.8rem; }
+    .del-desc { font-size: 0.8rem; font-weight: 300; color: var(--muted); line-height: 1.78; }
+
+    /* ══ CONTACT ══ */
+    .contact { background: var(--black); }
+    .contact__grid { display: grid; grid-template-columns: 5fr 4fr; gap: 7rem; align-items: start; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label {
+      display: block; font-size: 0.52rem; letter-spacing: 0.38em; text-transform: uppercase;
+      color: rgba(196,149,58,0.65); margin-bottom: 0.6rem;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.85rem 0;
+      background: transparent; border: none; border-bottom: 1px solid rgba(240,237,229,0.12);
+      font-family: 'Jost', sans-serif; font-size: 0.9rem; font-weight: 300;
+      color: var(--cream); outline: none;
+      transition: border-color 0.25s; border-radius: 0; appearance: none;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
+    .form-group select option { background: var(--deep); color: var(--cream); }
+    .form-group textarea { resize: none; min-height: 88px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; }
+    .form-submit {
+      width: 100%; padding: 1rem; margin-top: 0.5rem;
+      background: var(--gold); color: var(--black); border: 1px solid var(--gold);
+      font-family: 'Jost', sans-serif; font-size: 0.6rem; font-weight: 600;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .form-submit:hover { background: var(--gold-lt); border-color: var(--gold-lt); }
+    .contact__info-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--cream); margin: 1.8rem 0 2rem; }
+    .i-row { padding: 1.1rem 0; border-bottom: 1px solid rgba(240,237,229,0.06); }
+    .i-label { font-size: 0.5rem; letter-spacing: 0.42em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 0.35rem; }
+    .i-val { font-size: 0.88rem; font-weight: 300; color: rgba(240,237,229,0.6); line-height: 1.72; }
+
+    /* ══ FOOTER ══ */
+    footer { background: var(--forest); padding: 80px 0 44px; text-align: center; border-top: 1px solid rgba(196,149,58,0.1); }
+    .foot-name {
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+      font-size: clamp(4rem, 9vw, 7.5rem); color: var(--cream);
+      letter-spacing: 0.24em; line-height: 1;
+    }
+    .foot-tagline { font-size: 0.57rem; letter-spacing: 0.46em; text-transform: uppercase; color: rgba(240,237,229,0.22); margin: 0.6rem 0 3rem; }
+    .foot-links { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin-bottom: 3rem; }
+    .foot-links a { font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(196,149,58,0.55); transition: opacity 0.2s; }
+    .foot-links a:hover { opacity: 0.4; }
+    .foot-rule { width: 50px; height: 1px; background: rgba(196,149,58,0.15); margin: 0 auto 1.5rem; }
+    .foot-copy { font-size: 0.52rem; letter-spacing: 0.2em; color: rgba(240,237,229,0.18); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1024px) {
+      .feat-grid { grid-template-columns: repeat(2,1fr); }
+      .occ-grid  { grid-template-columns: repeat(2,1fr); }
+      .spotlight__grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 768px) {
+      *, *::before, *::after { cursor: auto !important; }
+      #cursor-dot, #cursor-ring { display: none; }
+      .wrap { padding: 0 1.5rem; }
+      .sp   { padding: 80px 0; }
+      #nav, #nav.on { padding: 1rem 1.5rem; }
+      .nav-links, .nav-cta { display: none; }
+      .nav-ham { display: flex; }
+      .hero__h1 { font-size: clamp(2.8rem, 10vw, 4.5rem); }
+      .feat-grid { grid-template-columns: 1fr 1fr; }
+      .feat-card__body { transform: translateY(0); }
+      .occ-grid { grid-template-columns: 1fr; }
+      .occ-desc { max-height: none; }
+      .spotlight__grid { grid-template-columns: 1fr; }
+      .del-grid { grid-template-columns: 1fr; }
+      .del-col { border-right: none; border-bottom: 1px solid rgba(196,149,58,0.1); padding: 2.5rem 2rem; }
+      .del-col:last-child { border-bottom: none; }
+      .contact__grid { grid-template-columns: 1fr; gap: 4rem; }
+      .form-row { grid-template-columns: 1fr; gap: 0; }
+      .marquee__item { width: 140px; height: 180px; }
+    }
+    @media (max-width: 480px) {
+      .feat-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ PRELOADER ══ -->
+  <div id="preloader">
+    <div class="pre-content">
+      <p class="pre-name">Pétale</p>
+      <div class="pre-line"></div>
+    </div>
+  </div>
+
+  <!-- ══ CUSTOM CURSOR ══ -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"><span>VIEW</span></div>
+
+  <!-- ══ NAVIGATION ══ -->
+  <nav id="nav">
+    <a href="#home" class="nav-logo">Pétale</a>
+    <div class="nav-links">
+      <a href="#arrangements">Arrangements</a>
+      <a href="#occasions">Occasions</a>
+      <a href="#nature">Gallery</a>
+      <a href="#delivery">Delivery</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="#contact" class="nav-cta">Order Now</a>
+    <button class="nav-ham" id="ham" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero" id="home">
+    <div class="hero__bg" id="heroBg">
+      <img src="photos/IMG_5209.JPG" alt="Bioluminescent Blue Lilies">
+    </div>
+    <div class="hero__vignette"></div>
+    <div class="hero__glow"></div>
+    <div class="hero__inner">
+      <p class="hero__eyebrow">Luxury Florist &nbsp;·&nbsp; Dubai</p>
+      <h1 class="hero__h1" id="heroTitle">Where Nature<br>Becomes Art.</h1>
+      <p class="hero__sub">Handcrafted luxury floral arrangements<br>for life's most meaningful moments.</p>
+      <div class="hero__rule"></div>
+      <div class="hero__actions">
+        <a href="#arrangements" class="btn btn-gold">Explore Collections</a>
+        <a href="#contact" class="btn btn-out">Request Bespoke</a>
+      </div>
+    </div>
+    <div class="hero__scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ══ MARQUEE ══ -->
+  <div class="marquee">
+    <div class="marquee__track" id="marqueeTrack">
+      <div class="marquee__item"><img src="photos/IMG_5200.JPG" alt="Pink Lily"></div>
+      <div class="marquee__item"><img src="photos/IMG_5201.JPG" alt="Blue Lily"></div>
+      <div class="marquee__item"><img src="photos/IMG_5202.JPG" alt="Blue Wisteria"></div>
+      <div class="marquee__item"><img src="photos/IMG_5204.JPG" alt="Blue Fish"></div>
+      <div class="marquee__item"><img src="photos/IMG_5205.JPG" alt="Blue Butterfly"></div>
+      <div class="marquee__item"><img src="photos/IMG_5206.JPG" alt="Orange Butterfly"></div>
+      <div class="marquee__item"><img src="photos/IMG_5207.JPG" alt="Mint Butterfly"></div>
+      <div class="marquee__item"><img src="photos/IMG_5208.JPG" alt="Orange Lily"></div>
+      <div class="marquee__item"><img src="photos/IMG_5209.JPG" alt="Glowing Lily"></div>
+      <div class="marquee__item"><img src="photos/IMG_5210.JPG" alt="Neon Lily"></div>
+      <div class="marquee__item"><img src="photos/IMG_5211.JPG" alt="Flame Flower"></div>
+      <div class="marquee__item"><img src="photos/IMG_5215.JPG" alt="Tropical Bird"></div>
+      <div class="marquee__item"><img src="photos/IMG_5220.JPG" alt="Hedgehog"></div>
+      <div class="marquee__item"><img src="photos/IMG_5225.JPG" alt="Bee"></div>
+      <div class="marquee__item"><img src="photos/IMG_5229.JPG" alt="Crowned Crane"></div>
+      <!-- Duplicate for seamless loop -->
+      <div class="marquee__item"><img src="photos/IMG_5200.JPG" alt="Pink Lily"></div>
+      <div class="marquee__item"><img src="photos/IMG_5201.JPG" alt="Blue Lily"></div>
+      <div class="marquee__item"><img src="photos/IMG_5202.JPG" alt="Blue Wisteria"></div>
+      <div class="marquee__item"><img src="photos/IMG_5204.JPG" alt="Blue Fish"></div>
+      <div class="marquee__item"><img src="photos/IMG_5205.JPG" alt="Blue Butterfly"></div>
+      <div class="marquee__item"><img src="photos/IMG_5206.JPG" alt="Orange Butterfly"></div>
+      <div class="marquee__item"><img src="photos/IMG_5207.JPG" alt="Mint Butterfly"></div>
+      <div class="marquee__item"><img src="photos/IMG_5208.JPG" alt="Orange Lily"></div>
+      <div class="marquee__item"><img src="photos/IMG_5209.JPG" alt="Glowing Lily"></div>
+      <div class="marquee__item"><img src="photos/IMG_5210.JPG" alt="Neon Lily"></div>
+      <div class="marquee__item"><img src="photos/IMG_5211.JPG" alt="Flame Flower"></div>
+      <div class="marquee__item"><img src="photos/IMG_5215.JPG" alt="Tropical Bird"></div>
+      <div class="marquee__item"><img src="photos/IMG_5220.JPG" alt="Hedgehog"></div>
+      <div class="marquee__item"><img src="photos/IMG_5225.JPG" alt="Bee"></div>
+      <div class="marquee__item"><img src="photos/IMG_5229.JPG" alt="Crowned Crane"></div>
+    </div>
+  </div>
+
+  <!-- ══ FEATURED ARRANGEMENTS ══ -->
+  <section class="featured sp" id="arrangements">
+    <div class="wrap">
+      <div class="featured__head">
+        <div class="rev-left">
+          <span class="tag tag--gold">The Collections</span>
+          <h2 class="h2 h2i h2--cream">Signature Arrangements</h2>
+        </div>
+      </div>
+      <div class="feat-grid stagger">
+
+        <div class="feat-card">
+          <div class="feat-card__img">
+            <img src="photos/IMG_5201.JPG" alt="Electric Blue Lily">
+          </div>
+          <div class="feat-card__overlay"></div>
+          <div class="feat-card__body">
+            <h3 class="feat-card__name">The Cerulean Garden</h3>
+            <p class="feat-card__desc">Electric blue lilies and hydrangeas — a luminescent cascade of deep ocean light</p>
+            <div class="feat-card__foot">
+              <span class="feat-card__price">From AED 350</span>
+              <a href="#contact" class="feat-card__link">Order →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-card__img">
+            <img src="photos/IMG_5200.JPG" alt="Pink Lily">
+          </div>
+          <div class="feat-card__overlay"></div>
+          <div class="feat-card__body">
+            <h3 class="feat-card__name">The Blush Atelier</h3>
+            <p class="feat-card__desc">Soft pink Oriental lilies, garden roses, and ivory lisianthus in a tender bouquet</p>
+            <div class="feat-card__foot">
+              <span class="feat-card__price">From AED 285</span>
+              <a href="#contact" class="feat-card__link">Order →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-card__img">
+            <img src="photos/IMG_5210.JPG" alt="Neon Lily">
+          </div>
+          <div class="feat-card__overlay"></div>
+          <div class="feat-card__body">
+            <h3 class="feat-card__name">The Midnight Cascade</h3>
+            <p class="feat-card__desc">Neon-lit florals in teal, coral, and gold — otherworldly and utterly unforgettable</p>
+            <div class="feat-card__foot">
+              <span class="feat-card__price">From AED 420</span>
+              <a href="#contact" class="feat-card__link">Order →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-card__img">
+            <img src="photos/IMG_5208.JPG" alt="Orange Lily">
+          </div>
+          <div class="feat-card__overlay"></div>
+          <div class="feat-card__body">
+            <h3 class="feat-card__name">The Crimson Bloom</h3>
+            <p class="feat-card__desc">Flame-orange tiger lilies set against darkness — bold, warm, and commanding</p>
+            <div class="feat-card__foot">
+              <span class="feat-card__price">From AED 310</span>
+              <a href="#contact" class="feat-card__link">Order →</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ OCCASIONS ══ -->
+  <section class="occasions sp" id="occasions">
+    <div class="wrap">
+      <div class="occ-head reveal">
+        <span class="tag tag--blue">Every Occasion</span>
+        <h2 class="h2 h2i h2--cream">An Arrangement for<br>Every Moment</h2>
+        <p>From intimate celebrations to grand gestures — we create arrangements that speak without words.</p>
+      </div>
+    </div>
+    <div class="occ-grid stagger">
+
+      <div class="occ-card">
+        <div class="occ-card__img">
+          <img src="photos/IMG_5207.JPG" alt="Mint Butterfly">
+        </div>
+        <div class="occ-card__grad"></div>
+        <div class="occ-card__body">
+          <span class="occ-num">01</span>
+          <h3 class="occ-name">Weddings &amp; Ceremonies</h3>
+          <p class="occ-desc">Bridal bouquets, altar arrangements, venue dressing. Full consultation included.</p>
+          <span class="occ-link">Enquire →</span>
+        </div>
+      </div>
+
+      <div class="occ-card">
+        <div class="occ-card__img">
+          <img src="photos/IMG_5215.JPG" alt="Tropical Bird">
+        </div>
+        <div class="occ-card__grad"></div>
+        <div class="occ-card__body">
+          <span class="occ-num">02</span>
+          <h3 class="occ-name">Corporate &amp; Events</h3>
+          <p class="occ-desc">Lobby installations, product launches, and weekly subscription programmes.</p>
+          <span class="occ-link">Enquire →</span>
+        </div>
+      </div>
+
+      <div class="occ-card">
+        <div class="occ-card__img">
+          <img src="photos/IMG_5211.JPG" alt="Flame Flower">
+        </div>
+        <div class="occ-card__grad"></div>
+        <div class="occ-card__body">
+          <span class="occ-num">03</span>
+          <h3 class="occ-name">Sympathy &amp; Comfort</h3>
+          <p class="occ-desc">Dignified, thoughtful arrangements for your most sensitive moments.</p>
+          <span class="occ-link">Enquire →</span>
+        </div>
+      </div>
+
+      <div class="occ-card">
+        <div class="occ-card__img">
+          <img src="photos/IMG_5205.JPG" alt="Blue Butterfly">
+        </div>
+        <div class="occ-card__grad"></div>
+        <div class="occ-card__body">
+          <span class="occ-num">04</span>
+          <h3 class="occ-name">Birthday Celebrations</h3>
+          <p class="occ-desc">Bespoke hand-tied bouquets in every colour, scale, and spirit.</p>
+          <span class="occ-link">Enquire →</span>
+        </div>
+      </div>
+
+      <div class="occ-card">
+        <div class="occ-card__img">
+          <img src="photos/IMG_5206.JPG" alt="Orange Butterfly">
+        </div>
+        <div class="occ-card__grad"></div>
+        <div class="occ-card__body">
+          <span class="occ-num">05</span>
+          <h3 class="occ-name">Home &amp; Interiors</h3>
+          <p class="occ-desc">Weekly or fortnightly arrangements designed to complement your living space.</p>
+          <span class="occ-link">Enquire →</span>
+        </div>
+      </div>
+
+      <div class="occ-card">
+        <div class="occ-card__img">
+          <img src="photos/IMG_5204.JPG" alt="Blue Fish">
+        </div>
+        <div class="occ-card__grad"></div>
+        <div class="occ-card__body">
+          <span class="occ-num">06</span>
+          <h3 class="occ-name">Romantic Gestures</h3>
+          <p class="occ-desc">Surprise deliveries, anniversary pieces, and grand gestures on short notice.</p>
+          <span class="occ-link">Enquire →</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ LIVING GARDEN QUOTE ══ -->
+  <section class="living">
+    <div class="living__bg">
+      <img src="photos/IMG_5202.JPG" alt="Blue Wisteria">
+    </div>
+    <div class="living__overlay"></div>
+    <div class="living__inner reveal">
+      <span class="living__mark">"</span>
+      <blockquote class="living__quote">
+        Nature does not hurry, yet everything is accomplished.<br>We simply learn from her.
+      </blockquote>
+      <span class="living__attr">Pétale Studio &nbsp;·&nbsp; Dubai</span>
+    </div>
+  </section>
+
+  <!-- ══ NATURE SPOTLIGHT ══ -->
+  <section class="spotlight sp" id="nature">
+    <div class="wrap">
+      <div class="reveal" style="text-align:center;margin-bottom:4rem">
+        <span class="tag tag--gold">The Living World</span>
+        <h2 class="h2 h2i h2--cream">Nature, Captured.</h2>
+      </div>
+    </div>
+    <div class="spotlight__grid stagger">
+
+      <div class="spot-item">
+        <img src="photos/IMG_5220.JPG" alt="Hedgehog in Lavender">
+        <div class="spot-item__label">
+          <span class="spot-item__tag">The Garden</span>
+          <p class="spot-item__name">A hedgehog finds his lavender.</p>
+        </div>
+      </div>
+
+      <div class="spot-item">
+        <img src="photos/IMG_5225.JPG" alt="Bee on Blossoms">
+        <div class="spot-item__label">
+          <span class="spot-item__tag">Pollinators</span>
+          <p class="spot-item__name">The keeper of every bloom.</p>
+        </div>
+      </div>
+
+      <div class="spot-item">
+        <img src="photos/IMG_5229.JPG" alt="Crowned Crane">
+        <div class="spot-item__label">
+          <span class="spot-item__tag">Rarity</span>
+          <p class="spot-item__name">Crown of gold, blue of eye.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ DELIVERY ══ -->
+  <section class="delivery sp" id="delivery">
+    <div class="wrap">
+      <div class="del-head reveal">
+        <span class="tag tag--gold">White Glove Service</span>
+        <h2 class="h2 h2i h2--cream">From Our Studio<br>to Your Door.</h2>
+        <p>Every arrangement is hand-delivered by our own team — never left at the door, always placed with care.</p>
+      </div>
+      <div class="del-grid stagger">
+        <div class="del-col">
+          <div class="del-icon-wrap"><span class="del-icon">◈</span></div>
+          <h3 class="del-name">Same-Day Delivery</h3>
+          <p class="del-desc">Order before 2:00 PM for same-day delivery across Dubai, seven days a week.</p>
+        </div>
+        <div class="del-col">
+          <div class="del-icon-wrap"><span class="del-icon">◈</span></div>
+          <h3 class="del-name">UAE Nationwide</h3>
+          <p class="del-desc">Climate-controlled overnight shipping to Abu Dhabi, Sharjah, RAK, and beyond.</p>
+        </div>
+        <div class="del-col">
+          <div class="del-icon-wrap"><span class="del-icon">◈</span></div>
+          <h3 class="del-name">Subscription Boxes</h3>
+          <p class="del-desc">Weekly or fortnightly seasonal bouquets, curated fresh and delivered on your schedule.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CONTACT ══ -->
+  <section class="contact sp" id="contact">
+    <div class="wrap">
+      <div class="reveal" style="margin-bottom:4.5rem">
+        <span class="tag tag--gold">Place an Order</span>
+        <h2 class="h2 h2i h2--cream">Get in Touch.</h2>
+      </div>
+      <div class="contact__grid">
+        <div class="rev-left">
+          <form onsubmit="return false">
+            <div class="form-row">
+              <div class="form-group"><label>First Name</label><input type="text" placeholder="Sara"></div>
+              <div class="form-group"><label>Last Name</label><input type="text" placeholder="Al Mansoori"></div>
+            </div>
+            <div class="form-group"><label>Email Address</label><input type="email" placeholder="sara@email.com"></div>
+            <div class="form-group"><label>Phone / WhatsApp</label><input type="tel" placeholder="+971 50 000 0000"></div>
+            <div class="form-group">
+              <label>Occasion</label>
+              <select>
+                <option value="" disabled selected>Select an occasion</option>
+                <option>Wedding &amp; Ceremony</option>
+                <option>Birthday</option>
+                <option>Corporate Event</option>
+                <option>Sympathy</option>
+                <option>Home Subscription</option>
+                <option>Romantic Gesture</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Preferred Delivery Date</label><input type="date"></div>
+            <div class="form-group"><label>Notes &amp; Special Requests</label><textarea placeholder="Colours, flowers, size, card message, delivery address..."></textarea></div>
+            <button type="submit" class="form-submit">Send Enquiry</button>
+          </form>
+        </div>
+        <div class="rev-right">
+          <div class="gold-rule"></div>
+          <h3 class="contact__info-title">Visit the Studio</h3>
+          <div class="i-row">
+            <span class="i-label">Address</span>
+            <p class="i-val">12 Al Wasl Road, Jumeirah 1<br>Dubai, United Arab Emirates</p>
+          </div>
+          <div class="i-row">
+            <span class="i-label">Studio Hours</span>
+            <p class="i-val">Monday – Saturday: 9:00 AM – 7:00 PM<br><span style="color:rgba(196,149,58,0.7)">Sunday by appointment</span></p>
+          </div>
+          <div class="i-row">
+            <span class="i-label">Phone &amp; WhatsApp</span>
+            <p class="i-val"><a href="tel:+97145550000" style="color:var(--gold)">+971 4 555 0000</a></p>
+          </div>
+          <div class="i-row">
+            <span class="i-label">Email</span>
+            <p class="i-val"><a href="mailto:hello@petale.ae" style="color:var(--gold)">hello@petale.ae</a></p>
+          </div>
+          <div class="i-row">
+            <span class="i-label">Instagram</span>
+            <p class="i-val"><a href="#" style="color:rgba(77,195,247,0.8)">@petale.ae</a></p>
+          </div>
+          <div style="margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap">
+            <a href="#" class="btn btn-gold">WhatsApp Us</a>
+            <a href="#" class="btn btn-out-gold">Instagram</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div class="wrap">
+      <p class="foot-name">Pétale</p>
+      <p class="foot-tagline">Where Nature Becomes Art &nbsp;·&nbsp; Dubai</p>
+      <nav class="foot-links">
+        <a href="#arrangements">Arrangements</a>
+        <a href="#occasions">Occasions</a>
+        <a href="#nature">Gallery</a>
+        <a href="#delivery">Delivery</a>
+        <a href="#contact">Order</a>
+        <a href="#">Instagram</a>
+      </nav>
+      <div class="foot-rule"></div>
+      <p class="foot-copy">© 2025 Pétale · All rights reserved · 12 Al Wasl Road, Jumeirah 1, Dubai</p>
+    </div>
+  </footer>
+
+  <script>
+    /* ── PRELOADER ── */
+    window.addEventListener('load', () => {
+      const pl = document.getElementById('preloader');
+      setTimeout(() => {
+        pl.style.opacity = '0';
+        setTimeout(() => { pl.style.display = 'none'; initPetals(); }, 900);
+      }, 1800);
+    });
+
+    /* ── CUSTOM CURSOR ── */
+    const dot    = document.getElementById('cursor-dot');
+    const ring   = document.getElementById('cursor-ring');
+    let mx = window.innerWidth/2, my = window.innerHeight/2;
+    let rx = mx, ry = my;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px';
+      dot.style.top  = my + 'px';
+    });
+
+    (function trackRing() {
+      rx += (mx - rx) * 0.11;
+      ry += (my - ry) * 0.11;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(trackRing);
+    })();
+
+    /* Cursor state on images */
+    document.querySelectorAll('.feat-card, .occ-card, .spot-item, .marquee__item, .living__bg').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('img-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('img-hover'));
+    });
+    /* Cursor state on buttons/links */
+    document.querySelectorAll('a, button, .form-submit').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('btn-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('btn-hover'));
+    });
+
+    /* ── HERO PARALLAX ── */
+    const heroBg = document.getElementById('heroBg');
+    window.addEventListener('scroll', () => {
+      const s = window.scrollY;
+      if (heroBg) heroBg.style.transform = `translateY(${s * 0.38}px)`;
+    }, { passive: true });
+
+    /* ── NAV SCROLL ── */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('on', window.scrollY > 60);
+    }, { passive: true });
+
+    /* ── HERO TITLE SPLIT ── */
+    window.addEventListener('load', () => {
+      const title = document.getElementById('heroTitle');
+      if (!title) return;
+      const html = title.innerHTML;
+      // preserve <br>
+      const parts = html.split('<br>');
+      title.innerHTML = parts.map(part =>
+        [...part].map((ch, i) =>
+          `<span class="char" style="animation-delay:${0.7 + i * 0.045}s">${ch === ' ' ? '&nbsp;' : ch}</span>`
+        ).join('')
+      ).join('<br>');
+    });
+
+    /* ── INTERSECTION OBSERVER REVEALS ── */
+    const revObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('vis'); revObs.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal, .rev-left, .rev-right, .rev-up, .stagger').forEach(el => revObs.observe(el));
+
+    /* ── FLOATING PETALS ── */
+    function initPetals() {
+      function spawnPetal() {
+        const p = document.createElement('div');
+        p.className = 'petal-particle';
+        const size  = 4 + Math.random() * 10;
+        const left  = Math.random() * 100;
+        const dur   = 6 + Math.random() * 8;
+        const delay = Math.random() * 3;
+        const isGold = Math.random() > 0.5;
+        p.style.cssText = `
+          left:${left}vw; width:${size}px; height:${size * 1.6}px;
+          background:${isGold ? 'rgba(196,149,58,0.18)' : 'rgba(77,195,247,0.12)'};
+          animation-duration:${dur}s; animation-delay:${delay}s;
+        `;
+        document.body.appendChild(p);
+        p.addEventListener('animationend', () => p.remove());
+      }
+      spawnPetal();
+      setInterval(spawnPetal, 600);
+    }
+
+    /* ── MOBILE NAV ── */
+    const ham = document.getElementById('ham');
+    let mMob = null;
+    ham && ham.addEventListener('click', () => {
+      if (mMob) { mMob.remove(); mMob = null; return; }
+      mMob = document.createElement('div');
+      mMob.style.cssText = 'position:fixed;top:56px;left:0;right:0;z-index:799;background:rgba(6,8,16,0.96);backdrop-filter:blur(20px);border-bottom:1px solid rgba(196,149,58,0.15);padding:2rem 1.5rem 2.5rem;display:flex;flex-direction:column;gap:1.6rem';
+      [['Arrangements','#arrangements'],['Occasions','#occasions'],['Gallery','#nature'],['Delivery','#delivery'],['Contact','#contact']].forEach(([lbl,href]) => {
+        const a = document.createElement('a');
+        a.href = href; a.textContent = lbl;
+        a.style.cssText = 'font-family:Cormorant Garamond,serif;font-size:1.5rem;font-weight:300;color:rgba(240,237,229,0.8);letter-spacing:0.1em';
+        a.addEventListener('click', () => { mMob.remove(); mMob = null; });
+        mMob.appendChild(a);
+      });
+      document.body.appendChild(mMob);
+    });
+  </script>
+
+</body>
+</html>
