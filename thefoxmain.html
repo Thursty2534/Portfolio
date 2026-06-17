@@ -468,6 +468,21 @@
       transition: border-color 0.2s, gap 0.2s;
     }
     a.work-card:hover .work-card__view { border-color: var(--gold); gap: 0.7rem; }
+    .work-subsection {
+      margin-bottom: 4.5rem;
+    }
+    .work-subsection:last-child { margin-bottom: 0; }
+    .work-subsection__header {
+      display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .work-subsection__title {
+      font-family: var(--font-body); font-size: 0.6rem; font-weight: 500;
+      letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+      white-space: nowrap;
+    }
+    .work-subsection__rule {
+      flex: 1; height: 1px; background: var(--divider);
+    }
 
     .work-card__status {
       display: inline-flex; align-items: center; gap: 0.4rem;
@@ -951,50 +966,69 @@
       <p class="section__sub">Every project starts from zero. No WordPress. No shortcuts. Just clean code and clear thinking.</p>
     </div>
 
-    <div class="work-grid stagger">
-
-      <a href="flower_shop.html" class="work-card">
-        <div class="work-card__status">
-          <div class="work-card__status-dot pulse"></div>
-          Live Mockup
-        </div>
-        <h3 class="work-card__title">Pétale — Luxury Florist</h3>
-        <p class="work-card__desc">Full homepage redesign for a high-end Dubai flower shop. Dark cinematic aesthetic, real photography, custom cursor, parallax hero, and animated marquee gallery.</p>
-        <span class="work-card__view">View Project →</span>
-        <div class="work-card__corner"></div>
-      </a>
-
-      <div class="work-card">
-        <div class="work-card__status">
-          <div class="work-card__status-dot pulse"></div>
-          In Progress
-        </div>
-        <h3 class="work-card__title">This Portfolio</h3>
-        <p class="work-card__desc">Built entirely from scratch. No templates, no frameworks. A living document that grows as the business grows.</p>
-        <div class="work-card__corner"></div>
+    <!-- Concept Redesigns -->
+    <div class="work-subsection reveal">
+      <div class="work-subsection__header">
+        <span class="work-subsection__title">Concept Redesigns</span>
+        <div class="work-subsection__rule"></div>
       </div>
+      <div class="work-grid stagger">
 
-      <div class="work-card">
-        <div class="work-card__status">
-          <div class="work-card__status-dot"></div>
-          Coming Soon
-        </div>
-        <h3 class="work-card__title">AI Property Walkthrough</h3>
-        <p class="work-card__desc">Photo-to-interactive tour platform for Dubai real estate agents. Buyers explore before they book a viewing.</p>
-        <div class="work-card__corner"></div>
+        <a href="flower_shop.html" class="work-card">
+          <div class="work-card__status">
+            <div class="work-card__status-dot pulse"></div>
+            Concept Redesign
+          </div>
+          <h3 class="work-card__title">Pétale — Luxury Florist</h3>
+          <p class="work-card__desc">Dark cinematic homepage for a high-end Dubai florist. Custom cursor, parallax hero, bioluminescent photography, and animated marquee gallery.</p>
+          <span class="work-card__view">View Project →</span>
+          <div class="work-card__corner"></div>
+        </a>
+
       </div>
-
-      <div class="work-card">
-        <div class="work-card__status">
-          <div class="work-card__status-dot"></div>
-          Coming Soon
-        </div>
-        <h3 class="work-card__title">Client Web Projects</h3>
-        <p class="work-card__desc">Website builds and optimisations for local Dubai businesses. Clean, fast, and built to convert visitors into clients.</p>
-        <div class="work-card__corner"></div>
-      </div>
-
     </div>
+
+    <!-- In Development -->
+    <div class="work-subsection reveal">
+      <div class="work-subsection__header">
+        <span class="work-subsection__title">In Development</span>
+        <div class="work-subsection__rule"></div>
+      </div>
+      <div class="work-grid stagger">
+
+        <div class="work-card">
+          <div class="work-card__status">
+            <div class="work-card__status-dot pulse"></div>
+            In Progress
+          </div>
+          <h3 class="work-card__title">This Portfolio</h3>
+          <p class="work-card__desc">Built entirely from scratch. No templates, no frameworks. A living document that grows as the business grows.</p>
+          <div class="work-card__corner"></div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card__status">
+            <div class="work-card__status-dot"></div>
+            Coming Soon
+          </div>
+          <h3 class="work-card__title">AI Property Walkthrough</h3>
+          <p class="work-card__desc">Photo-to-interactive tour platform for Dubai real estate agents. Buyers explore before they book a viewing.</p>
+          <div class="work-card__corner"></div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card__status">
+            <div class="work-card__status-dot"></div>
+            Coming Soon
+          </div>
+          <h3 class="work-card__title">Client Web Projects</h3>
+          <p class="work-card__desc">Website builds and optimisations for local Dubai businesses. Clean, fast, and built to convert visitors into clients.</p>
+          <div class="work-card__corner"></div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </section>
 
