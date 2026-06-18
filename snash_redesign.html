@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APEX — Premium Mobile Detailing · Concept Design</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ══ Reset ══ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--void); color: var(--white); overflow-x: hidden; cursor: none; }
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+    button { background: none; border: none; cursor: none; font-family: inherit; }
+    ul { list-style: none; }
+
+    /* ══ Tokens ══ */
+    :root {
+      --void:       #050709;
+      --dark:       #0B1018;
+      --dark-mid:   #101620;
+      --dark-panel: #161E2A;
+      --blue:       #00AAFF;
+      --blue-bright:#40C8FF;
+      --blue-deep:  #0077CC;
+      --blue-glow:  rgba(0,170,255,0.14);
+      --blue-glow2: rgba(0,170,255,0.28);
+      --white:      #EEF4FF;
+      --silver:     #7A8FA8;
+      --silver-lt:  #A8BDD0;
+      --divider:    rgba(0,170,255,0.12);
+      --ease:       cubic-bezier(0.16,1,0.3,1);
+      --ease-in:    cubic-bezier(0.4,0,1,1);
+    }
+
+    /* ══ Scroll Progress ══ */
+    #prog {
+      position: fixed; top: 0; left: 0; height: 2px; width: 0;
+      background: linear-gradient(90deg, var(--blue-deep), var(--blue), var(--blue-bright));
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    /* ══ Cursor ══ */
+    .c-dot, .c-ring {
+      position: fixed; border-radius: 50%; pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+    }
+    .c-dot  { width: 5px; height: 5px; background: var(--blue); }
+    .c-ring {
+      width: 28px; height: 28px;
+      border: 1px solid rgba(0,170,255,0.45);
+      transition: width 0.3s, height 0.3s, border-color 0.3s;
+    }
+    body:has(a:hover) .c-ring,
+    body:has(button:hover) .c-ring { width: 44px; height: 44px; border-color: var(--blue); }
+
+    /* ══ Preloader ══ */
+    #preload {
+      position: fixed; inset: 0; z-index: 10000; background: var(--void);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem;
+      transition: opacity 0.5s ease 0.1s;
+    }
+    #preload.out { opacity: 0; pointer-events: none; }
+    .pre-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 3rem; font-weight: 800;
+      letter-spacing: 0.28em; color: var(--white);
+    }
+    .pre-logo span { color: var(--blue); }
+    .pre-bar { width: 200px; height: 1px; background: rgba(238,244,255,0.1); position: relative; overflow: hidden; }
+    .pre-bar::after {
+      content: ''; position: absolute; top: 0; left: 0; height: 100%;
+      background: linear-gradient(90deg, var(--blue-deep), var(--blue-bright));
+      animation: preRun 1.8s var(--ease) forwards;
+    }
+    @keyframes preRun { from { width:0 } to { width:100% } }
+
+    /* ══ Mobile Menu ══ */
+    .mob {
+      position: fixed; inset: 0; z-index: 400; background: var(--void);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s;
+    }
+    .mob.open { opacity: 1; pointer-events: all; }
+    .mob a {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 2.5rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--white); transition: color 0.3s;
+    }
+    .mob a:hover { color: var(--blue); }
+    .mob-line { width: 40px; height: 1px; background: var(--divider); }
+
+    /* ══ Nav ══ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      padding: 1.4rem 3rem;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.4s, padding 0.4s, border-color 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.on {
+      background: rgba(5,7,9,0.92); backdrop-filter: blur(20px);
+      padding: 1rem 3rem; border-color: var(--divider);
+    }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 800;
+      letter-spacing: 0.22em; color: var(--white);
+    }
+    .nav-logo span { color: var(--blue); }
+    .nav-links { display: flex; align-items: center; gap: 2.5rem; }
+    .nav-links a {
+      font-size: 0.65rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--silver-lt); transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-cta {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.6rem 1.6rem; background: var(--blue); color: var(--void);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .nav-cta:hover { background: var(--blue-bright); box-shadow: 0 0 24px var(--blue-glow2); }
+    .ham { display: none; flex-direction: column; gap: 5px; }
+    .ham span { display: block; width: 24px; height: 1.5px; background: var(--white); transition: transform 0.3s, opacity 0.3s; }
+
+    /* ══ Buttons ══ */
+    .btn {
+      display: inline-block; font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.9rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.9rem 2.4rem; transition: all 0.3s;
+    }
+    .btn-blue { background: var(--blue); color: var(--void); }
+    .btn-blue:hover { background: var(--blue-bright); box-shadow: 0 0 30px var(--blue-glow2); }
+    .btn-outline { border: 1px solid rgba(238,244,255,0.3); color: var(--white); }
+    .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+    .btn-dark { background: var(--dark-panel); color: var(--blue); border: 1px solid var(--divider); }
+    .btn-dark:hover { background: var(--blue); color: var(--void); }
+
+    /* ══ Shared layout ══ */
+    section { padding: 7rem 0; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 3rem; }
+    .sec-label {
+      font-size: 0.6rem; font-weight: 600; letter-spacing: 0.48em; text-transform: uppercase;
+      color: var(--blue); display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem;
+    }
+    .sec-label::after { content: ''; width: 24px; height: 1px; background: var(--blue); opacity: 0.6; }
+    .sec-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 4.2rem); font-weight: 800;
+      letter-spacing: 0.03em; text-transform: uppercase; line-height: 1.05; color: var(--white);
+    }
+    .sec-title span { color: var(--blue); }
+    .sec-sub { font-size: 0.95rem; font-weight: 300; line-height: 1.8; color: var(--silver); margin-top: 1rem; }
+
+    /* ══ Reveal ══ */
+    .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); }
+    .reveal.vis { opacity: 1; transform: translateY(0); }
+    .stagger > * { opacity: 0; transform: translateY(28px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+    .stagger.vis > *:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0s; }
+    .stagger.vis > *:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:.1s; }
+    .stagger.vis > *:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:.2s; }
+    .stagger.vis > *:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:.3s; }
+    .stagger.vis > *:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:.4s; }
+    .stagger.vis > *:nth-child(6) { opacity:1; transform:translateY(0); transition-delay:.5s; }
+
+    /* ══ Hero ══ */
+    .hero {
+      position: relative; min-height: 100svh;
+      display: flex; align-items: center; overflow: hidden;
+    }
+    /* Tech grid background */
+    .hero__grid {
+      position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,170,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,170,255,0.045) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+    /* Radial glow from bottom */
+    .hero__glow {
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        radial-gradient(ellipse 130% 60% at 50% 120%, rgba(0,170,255,0.22) 0%, rgba(0,100,200,0.1) 30%, transparent 65%),
+        radial-gradient(ellipse 60% 40% at 15% 80%, rgba(0,170,255,0.07) 0%, transparent 55%);
+    }
+    /* Animated scan line */
+    .hero__scan {
+      position: absolute; left: 0; right: 0; height: 1px; z-index: 2; pointer-events: none;
+      background: linear-gradient(90deg, transparent 0%, rgba(0,170,255,0.5) 30%, var(--blue) 50%, rgba(0,170,255,0.5) 70%, transparent 100%);
+      animation: scanPass 6s ease-in-out infinite;
+    }
+    @keyframes scanPass {
+      0%   { top: -2px; opacity: 0; }
+      5%   { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+    /* Corner frame accents */
+    .hero__corner {
+      position: absolute; z-index: 2; width: 40px; height: 40px; pointer-events: none;
+    }
+    .hero__corner--tl { top: 4rem; left: 3rem; border-top: 1px solid var(--blue); border-left: 1px solid var(--blue); opacity: 0.5; }
+    .hero__corner--tr { top: 4rem; right: 3rem; border-top: 1px solid var(--blue); border-right: 1px solid var(--blue); opacity: 0.5; }
+    .hero__corner--bl { bottom: 4rem; left: 3rem; border-bottom: 1px solid var(--blue); border-left: 1px solid var(--blue); opacity: 0.5; }
+    .hero__corner--br { bottom: 4rem; right: 3rem; border-bottom: 1px solid var(--blue); border-right: 1px solid var(--blue); opacity: 0.5; }
+    /* Car silhouette */
+    .hero__car {
+      position: absolute; right: -2%; bottom: 5%; z-index: 1;
+      width: min(55%, 660px); color: var(--blue); opacity: 0.12;
+      pointer-events: none;
+    }
+    .hero__content { position: relative; z-index: 3; padding: 0 0 0 0; width: 100%; }
+    .hero__eyebrow {
+      font-size: 0.58rem; font-weight: 600; letter-spacing: 0.55em; text-transform: uppercase;
+      color: var(--blue); display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.4rem;
+      opacity: 0; animation: fadeUp 0.8s var(--ease) 0.3s forwards;
+    }
+    .hero__eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--blue); }
+    .hero__heading {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase;
+      font-size: clamp(3.2rem, 8.5vw, 8rem); line-height: 0.95; letter-spacing: 0.02em;
+      color: var(--white); margin-bottom: 1.6rem;
+      opacity: 0; animation: fadeUp 1s var(--ease) 0.5s forwards;
+    }
+    .hero__heading .hl { color: var(--blue); }
+    .hero__heading .ln { display: block; }
+    .hero__sub {
+      font-size: 0.78rem; font-weight: 400; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--silver); margin-bottom: 2.8rem;
+      opacity: 0; animation: fadeUp 0.8s var(--ease) 0.8s forwards;
+    }
+    .hero__sub span { color: rgba(0,170,255,0.7); }
+    .hero__actions {
+      display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 4rem;
+      opacity: 0; animation: fadeUp 0.8s var(--ease) 1s forwards;
+    }
+    .hero__stats {
+      display: flex; gap: 3rem; flex-wrap: wrap; padding-top: 3rem;
+      border-top: 1px solid var(--divider);
+      opacity: 0; animation: fadeUp 0.8s var(--ease) 1.3s forwards;
+    }
+    .hero-stat__n {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 2.2rem; font-weight: 800;
+      color: var(--blue); line-height: 1;
+    }
+    .hero-stat__l { font-size: 0.62rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--silver); margin-top: 0.3rem; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(28px) } to { opacity:1; transform:translateY(0) } }
+
+    /* ══ Stats band ══ */
+    .stats-band {
+      background: var(--dark-mid); border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider);
+      padding: 3rem 0;
+    }
+    .stats-band__grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2rem; text-align: center; }
+    .stat-item__n {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 3rem; font-weight: 800;
+      color: var(--blue); line-height: 1;
+    }
+    .stat-item__l { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--silver); margin-top: 0.5rem; }
+    .stat-item__divider { width: 30px; height: 2px; background: var(--blue); margin: 0.7rem auto 0; opacity: 0.4; }
+
+    /* ══ Services ══ */
+    .services { background: var(--dark); }
+    .services__head { margin-bottom: 4rem; }
+    .services__grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5px; }
+    .svc-card {
+      background: var(--dark-mid); padding: 2.8rem 2.4rem;
+      border: 1px solid var(--divider); border-top: 2px solid transparent;
+      transition: border-top-color 0.3s, background 0.3s, box-shadow 0.3s; position: relative; overflow: hidden;
+    }
+    .svc-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--blue-deep), var(--blue-bright));
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease);
+    }
+    .svc-card:hover::before { transform: scaleX(1); }
+    .svc-card:hover { background: var(--dark-panel); box-shadow: 0 0 40px rgba(0,170,255,0.08), inset 0 0 20px rgba(0,170,255,0.03); }
+    .svc-card__num {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.3em; color: rgba(0,170,255,0.35); margin-bottom: 1.8rem;
+    }
+    .svc-card__icon { width: 44px; height: 44px; color: var(--blue); margin-bottom: 1.4rem; }
+    .svc-card__name {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--white); margin-bottom: 0.8rem;
+    }
+    .svc-card__desc { font-size: 0.82rem; font-weight: 300; line-height: 1.7; color: var(--silver); margin-bottom: 1.8rem; }
+    .svc-card__link { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--blue); transition: letter-spacing 0.3s; }
+    .svc-card:hover .svc-card__link { letter-spacing: 0.32em; }
+
+    /* ══ How it works ══ */
+    .how { background: var(--void); }
+    .how__head { text-align: center; margin-bottom: 5rem; }
+    .how__head .sec-label { justify-content: center; }
+    .how__head .sec-label::before { content: ''; width: 24px; height: 1px; background: var(--blue); opacity: 0.6; }
+    .how__grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; position: relative; }
+    .how__grid::before {
+      content: ''; position: absolute; top: 2.8rem; left: calc(16.66% + 1.5rem); right: calc(16.66% + 1.5rem);
+      height: 1px; background: linear-gradient(90deg, var(--blue), rgba(0,170,255,0.3), var(--blue)); z-index: 0;
+    }
+    .how-step { padding: 0 2rem; text-align: center; position: relative; z-index: 1; }
+    .how-step__num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--dark-mid); border: 1px solid var(--blue);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 800;
+      color: var(--blue); letter-spacing: 0.05em;
+      box-shadow: 0 0 20px var(--blue-glow), 0 0 0 6px var(--void);
+      position: relative; z-index: 2;
+    }
+    .how-step__icon { font-size: 2rem; margin-bottom: 1rem; }
+    .how-step__name {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em; color: var(--white); margin-bottom: 0.8rem;
+    }
+    .how-step__desc { font-size: 0.82rem; font-weight: 300; line-height: 1.7; color: var(--silver); }
+
+    /* ══ Before & After ══ */
+    .ba { background: var(--dark); padding: 7rem 0; }
+    .ba__head { text-align: center; margin-bottom: 4rem; }
+    .ba__head .sec-label { justify-content: center; }
+    .ba__head .sec-label::before { content: ''; width: 24px; height: 1px; background: var(--blue); opacity: 0.6; }
+    .ba__comp {
+      position: relative; height: 460px; overflow: hidden;
+      border: 1px solid var(--divider); max-width: 900px; margin: 0 auto;
+    }
+    .ba__before, .ba__after {
+      position: absolute; inset: 0;
+    }
+    .ba__before-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 40% 40%, rgba(160,110,60,0.5) 0%, transparent 50%),
+        linear-gradient(135deg, #1A1008 0%, #2A1C0A 25%, #3D2C14 45%, #5A4020 65%, #8A6A3A 85%, #6A5028 100%);
+    }
+    .ba__after-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 60% 40%, rgba(0,200,255,0.35) 0%, transparent 50%),
+        radial-gradient(ellipse at 30% 70%, rgba(0,120,200,0.25) 0%, transparent 40%),
+        linear-gradient(135deg, #020810 0%, #050F1E 30%, #091828 55%, #0D2038 75%, #122840 100%);
+    }
+    /* Sparkle dots on the after panel */
+    .ba__after-bg::before {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(0,210,255,0.8) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px),
+        radial-gradient(circle, rgba(0,170,255,0.5) 1px, transparent 1px);
+      background-size: 120px 120px, 80px 80px, 160px 160px;
+      background-position: 20px 30px, 60px 80px, 100px 50px;
+      animation: sparkleShift 8s ease-in-out infinite;
+    }
+    @keyframes sparkleShift { 0%,100%{opacity:0.6} 50%{opacity:1} }
+    .ba__after {
+      clip-path: inset(0 50% 0 0);
+      transition: clip-path 0s;
+    }
+    .ba__tag {
+      position: absolute; top: 1.5rem; left: 1.5rem; z-index: 2;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase; padding: 0.35rem 0.9rem;
+      background: rgba(5,7,9,0.7); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(238,244,255,0.5);
+    }
+    .ba__after-tag { left: auto; right: 1.5rem; color: var(--blue); border-color: rgba(0,170,255,0.3); }
+    .ba__label {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 2; text-align: center;
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--silver);
+    }
+    .ba__line {
+      position: absolute; top: 0; bottom: 0; left: 50%; width: 2px;
+      background: var(--blue); z-index: 10; pointer-events: none;
+      box-shadow: 0 0 12px var(--blue), 0 0 24px var(--blue-glow);
+    }
+    .ba__handle {
+      position: absolute; top: 50%; left: 50%; z-index: 11; pointer-events: none;
+      transform: translate(-50%,-50%);
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--blue); border: 3px solid var(--void);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 20px var(--blue-glow2);
+    }
+    .ba__handle-arrows { color: var(--void); font-size: 0.8rem; font-weight: 800; letter-spacing: -2px; }
+    .ba__slider {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      opacity: 0; cursor: ew-resize; z-index: 20; -webkit-appearance: none; appearance: none;
+    }
+    .ba__caption { text-align: center; margin-top: 1.5rem; font-size: 0.72rem; color: var(--silver); letter-spacing: 0.1em; }
+
+    /* ══ Pricing ══ */
+    .pricing { background: var(--void); }
+    .pricing__head { text-align: center; margin-bottom: 4rem; }
+    .pricing__head .sec-label { justify-content: center; }
+    .pricing__head .sec-label::before { content: ''; width: 24px; height: 1px; background: var(--blue); opacity: 0.6; }
+    .pricing__grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5px; }
+    .price-card {
+      background: var(--dark-mid); padding: 2.8rem 2rem;
+      border: 1px solid var(--divider);
+      position: relative; transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .price-card:hover { transform: translateY(-6px); }
+    .price-card.featured {
+      background: var(--dark-panel);
+      border-color: var(--blue);
+      box-shadow: 0 0 40px var(--blue-glow), 0 0 80px rgba(0,170,255,0.06);
+    }
+    .price-card.featured:hover { box-shadow: 0 10px 60px var(--blue-glow2); }
+    .price-badge {
+      display: inline-block; font-size: 0.52rem; font-weight: 700; letter-spacing: 0.3em;
+      text-transform: uppercase; background: var(--blue); color: var(--void);
+      padding: 0.25rem 0.7rem; margin-bottom: 1.4rem;
+    }
+    .price-tier {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--white); margin-bottom: 0.5rem;
+    }
+    .price-val {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 3.2rem; font-weight: 800;
+      color: var(--blue); line-height: 1; margin-bottom: 0.3rem;
+    }
+    .price-val span { font-size: 1.4rem; font-weight: 500; }
+    .price-note { font-size: 0.62rem; color: var(--silver); letter-spacing: 0.1em; margin-bottom: 2rem; }
+    .price-divider { height: 1px; background: var(--divider); margin-bottom: 1.8rem; }
+    .price-feat { margin-bottom: 2rem; }
+    .price-feat li {
+      font-size: 0.78rem; font-weight: 400; color: var(--silver-lt);
+      padding: 0.55rem 0; border-bottom: 1px solid rgba(0,170,255,0.07);
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .price-feat li::before { content: ''; width: 6px; height: 6px; background: var(--blue); border-radius: 50%; flex-shrink: 0; }
+    .price-feat li.na { color: rgba(122,143,168,0.35); }
+    .price-feat li.na::before { background: rgba(0,170,255,0.15); }
+    .price-savings {
+      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.15em;
+      text-transform: uppercase; color: rgba(0,170,255,0.6); margin-bottom: 1.2rem;
+    }
+
+    /* ══ Testimonials ══ */
+    .testimonials { background: var(--dark); padding: 7rem 0; }
+    .testimonials__inner { max-width: 780px; margin: 0 auto; text-align: center; }
+    .t-mark {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 6rem; font-weight: 800;
+      color: var(--blue); opacity: 0.25; line-height: 0.6; margin-bottom: 1.5rem;
+    }
+    .t-quotes { position: relative; min-height: 200px; }
+    .t-quote { position: absolute; inset: 0; opacity: 0; transition: opacity 0.7s ease; }
+    .t-quote.active { opacity: 1; position: relative; }
+    .t-text {
+      font-family: 'Barlow Condensed', sans-serif; font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 400; font-style: italic; color: var(--white); line-height: 1.45; margin-bottom: 1.8rem;
+    }
+    .t-stars { color: var(--blue); font-size: 0.9rem; letter-spacing: 0.15em; margin-bottom: 0.8rem; }
+    .t-author { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--silver); }
+    .t-role { font-size: 0.6rem; letter-spacing: 0.15em; color: rgba(122,143,168,0.5); margin-top: 0.2rem; }
+    .t-dots { display: flex; gap: 0.6rem; justify-content: center; margin-top: 3rem; }
+    .t-dot {
+      width: 28px; height: 2px; background: rgba(0,170,255,0.2);
+      transition: background 0.3s, width 0.3s;
+    }
+    .t-dot.on { background: var(--blue); width: 44px; }
+
+    /* ══ App CTA ══ */
+    .app-cta {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(0,170,255,0.15) 0%, transparent 65%),
+        var(--void);
+      border-top: 1px solid var(--divider); padding: 6rem 0;
+    }
+    .app-cta__inner { max-width: 700px; margin: 0 auto; text-align: center; }
+    .app-cta__title {
+      font-family: 'Barlow Condensed', sans-serif; font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--white); line-height: 1.05; margin-bottom: 1rem;
+    }
+    .app-cta__title span { color: var(--blue); }
+    .app-cta__sub { font-size: 0.88rem; font-weight: 300; color: var(--silver); margin-bottom: 2.8rem; line-height: 1.7; }
+    .app-badges { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .app-badge {
+      display: flex; align-items: center; gap: 0.8rem;
+      background: var(--dark-panel); border: 1px solid var(--divider);
+      padding: 0.85rem 1.8rem; transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .app-badge:hover { border-color: var(--blue); box-shadow: 0 0 20px var(--blue-glow); }
+    .app-badge__icon { font-size: 1.4rem; }
+    .app-badge__text { text-align: left; }
+    .app-badge__small { font-size: 0.5rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--silver); }
+    .app-badge__store { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--white); letter-spacing: 0.08em; }
+
+    /* ══ WhatsApp Float ══ */
+    .wa { position: fixed; bottom: 2.4rem; right: 2.4rem; z-index: 300; display: flex; align-items: center; gap: 0.8rem; }
+    .wa-label {
+      background: var(--dark-panel); border: 1px solid var(--divider);
+      padding: 0.6rem 1.1rem; font-size: 0.62rem; font-weight: 500; letter-spacing: 0.1em;
+      color: var(--silver-lt); white-space: nowrap; opacity: 0; transform: translateX(10px);
+      transition: opacity 0.3s, transform 0.3s; pointer-events: none;
+    }
+    .wa:hover .wa-label { opacity: 1; transform: translateX(0); }
+    .wa-btn {
+      width: 52px; height: 52px; border-radius: 50%; background: #25D366;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.3); transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .wa-btn:hover { transform: scale(1.1); box-shadow: 0 8px 30px rgba(37,211,102,0.5); }
+    .wa-btn svg { width: 26px; height: 26px; fill: white; }
+
+    /* ══ Footer ══ */
+    footer { background: var(--void); border-top: 1px solid var(--divider); padding: 5rem 0 2.5rem; }
+    .footer__grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 4rem; margin-bottom: 4rem; }
+    .footer__logo { font-family: 'Barlow Condensed', sans-serif; font-size: 2rem; font-weight: 800; letter-spacing: 0.22em; color: var(--white); }
+    .footer__logo span { color: var(--blue); }
+    .footer__tagline { font-size: 0.72rem; font-weight: 300; color: var(--silver); margin-top: 0.6rem; line-height: 1.6; }
+    .footer__col-title { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.42em; text-transform: uppercase; color: var(--blue); margin-bottom: 1.4rem; }
+    .footer__list li { margin-bottom: 0.7rem; }
+    .footer__list a { font-size: 0.78rem; color: var(--silver); transition: color 0.3s; letter-spacing: 0.04em; }
+    .footer__list a:hover { color: var(--blue); }
+    .footer__bottom {
+      border-top: 1px solid var(--divider); padding-top: 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer__copy { font-size: 0.6rem; color: var(--silver); opacity: 0.4; letter-spacing: 0.1em; }
+    .footer__social { display: flex; gap: 1.5rem; }
+    .footer__social a { font-size: 0.58rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--silver); opacity: 0.4; transition: opacity 0.3s, color 0.3s; }
+    .footer__social a:hover { opacity: 1; color: var(--blue); }
+
+    /* ══ Responsive ══ */
+    @media (max-width: 1100px) {
+      .services__grid { grid-template-columns: repeat(2,1fr); }
+      .pricing__grid { grid-template-columns: repeat(2,1fr); }
+      .footer__grid { grid-template-columns: 1fr 1fr; gap: 3rem; }
+    }
+    @media (max-width: 768px) {
+      section { padding: 5rem 0; }
+      .wrap { padding: 0 1.6rem; }
+      nav { padding: 1.2rem 1.6rem; }
+      nav.on { padding: 0.85rem 1.6rem; }
+      .nav-links, .nav-cta { display: none; }
+      .ham { display: flex; }
+      .hero__car { display: none; }
+      .stats-band__grid { grid-template-columns: repeat(2,1fr); }
+      .services__grid { grid-template-columns: 1fr; }
+      .how__grid { grid-template-columns: 1fr; gap: 3rem; }
+      .how__grid::before { display: none; }
+      .pricing__grid { grid-template-columns: 1fr 1fr; }
+      .footer__grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .footer__bottom { flex-direction: column; gap: 1rem; text-align: center; }
+      .ba__comp { height: 300px; }
+      .hero__stats { gap: 2rem; }
+    }
+    @media (max-width: 480px) {
+      .pricing__grid { grid-template-columns: 1fr; }
+      .hero__actions { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ══ Hero scroll indicator ══ */
+    .hero__scroll {
+      position: absolute; bottom: 2.4rem; left: 50%; transform: translateX(-50%);
+      z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      opacity: 0; animation: fadeInD 1s ease 2.2s forwards; pointer-events: none;
+    }
+    .hero__scroll-text {
+      font-size: 0.48rem; font-weight: 600; letter-spacing: 0.45em; text-transform: uppercase;
+      color: var(--silver); opacity: 0.5;
+    }
+    .hero__scroll-line {
+      width: 1px; height: 44px;
+      background: linear-gradient(to bottom, var(--blue), transparent);
+      animation: linePulse 2s ease-in-out infinite;
+    }
+    @keyframes fadeInD { from{opacity:0} to{opacity:1} }
+    @keyframes linePulse { 0%,100%{opacity:0.35;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(0.55)} }
+
+    /* ══ Marquee ══ */
+    .marquee {
+      overflow: hidden; background: var(--dark-mid);
+      border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider);
+      padding: 0.85rem 0;
+    }
+    .marquee__track {
+      display: flex; white-space: nowrap;
+      animation: marqRoll 38s linear infinite;
+    }
+    .marquee__track:hover { animation-play-state: paused; }
+    .marquee__item {
+      font-size: 0.58rem; font-weight: 600; letter-spacing: 0.42em; text-transform: uppercase;
+      color: var(--silver); opacity: 0.55; padding: 0 1.8rem;
+    }
+    .marquee__sep { color: var(--blue); opacity: 1 !important; font-size: 0.5rem; }
+    @keyframes marqRoll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ══ Why APEX ══ */
+    .why { background: var(--dark); }
+    .why__head { text-align: center; margin-bottom: 4rem; }
+    .why__head .sec-label { justify-content: center; }
+    .why__head .sec-label::before { content:''; width:24px; height:1px; background:var(--blue); opacity:0.6; }
+    .why__grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5px; }
+    .why-card {
+      background: var(--dark-mid); padding: 2.6rem 2rem;
+      border: 1px solid var(--divider); position: relative; overflow: hidden;
+      transition: border-color 0.35s, background 0.35s;
+      text-align: center;
+    }
+    .why-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--blue-deep), var(--blue-bright));
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease);
+    }
+    .why-card:hover::after { transform: scaleX(1); }
+    .why-card:hover { border-color: rgba(0,170,255,0.3); background: var(--dark-panel); }
+    .why-card__icon { font-size: 2.4rem; margin-bottom: 1.2rem; display: block; }
+    .why-card__name {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.25rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--white); margin-bottom: 0.7rem;
+    }
+    .why-card__desc {
+      font-size: 0.78rem; font-weight: 300; color: var(--silver); line-height: 1.7;
+    }
+
+    /* ══ Coverage ══ */
+    .coverage { background: var(--void); }
+    .coverage__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+    .coverage__areas { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-top: 2.5rem; }
+    .area-tag {
+      padding: 0.75rem 1.1rem; border: 1px solid var(--divider);
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; color: var(--silver-lt);
+      transition: border-color 0.3s, color 0.3s, background 0.3s;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .area-tag::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--blue); opacity:0.5; flex-shrink:0; transition:opacity 0.3s; }
+    .area-tag:hover { border-color: var(--blue); color: var(--blue); background: rgba(0,170,255,0.04); }
+    .area-tag:hover::before { opacity: 1; }
+    .coverage__cta-note {
+      font-size: 0.75rem; font-weight: 300; color: var(--silver); margin-top: 2rem;
+      padding: 1rem 1.4rem; border: 1px solid var(--divider); border-left: 2px solid var(--blue);
+      line-height: 1.65;
+    }
+    .coverage__visual {
+      aspect-ratio: 1; position: relative; overflow: hidden;
+      border: 1px solid var(--divider);
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(0,170,255,0.15) 0%, transparent 60%),
+        var(--dark-mid);
+    }
+    .coverage__map-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,170,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,170,255,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .coverage__pin {
+      position: absolute; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--blue); box-shadow: 0 0 0 4px rgba(0,170,255,0.2), 0 0 20px rgba(0,170,255,0.4);
+      animation: pingPulse 2.5s ease-in-out infinite;
+    }
+    .coverage__pin::before {
+      content: attr(data-area); position: absolute; left: 16px; top: -4px;
+      font-size: 0.5rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--silver); white-space: nowrap;
+    }
+    .coverage__pin:nth-child(2) { animation-delay: 0.5s; }
+    .coverage__pin:nth-child(3) { animation-delay: 1s; }
+    .coverage__pin:nth-child(4) { animation-delay: 1.5s; }
+    .coverage__pin:nth-child(5) { animation-delay: 0.8s; }
+    .coverage__pin:nth-child(6) { animation-delay: 1.3s; }
+    @keyframes pingPulse { 0%,100%{box-shadow:0 0 0 4px rgba(0,170,255,0.2),0 0 20px rgba(0,170,255,0.4)} 50%{box-shadow:0 0 0 8px rgba(0,170,255,0.1),0 0 35px rgba(0,170,255,0.6)} }
+    .coverage__title-overlay {
+      position: absolute; top: 1.5rem; left: 1.5rem;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--blue); opacity: 0.6;
+    }
+
+    /* ══ Why/Coverage responsive ══ */
+    @media (max-width: 1100px) {
+      .why__grid { grid-template-columns: repeat(2,1fr); }
+      .coverage__grid { grid-template-columns: 1fr; gap: 3rem; }
+      .coverage__visual { max-height: 340px; }
+    }
+    @media (max-width: 768px) {
+      .why__grid { grid-template-columns: 1fr 1fr; }
+      .coverage__areas { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .why__grid { grid-template-columns: 1fr; }
+      .coverage__areas { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Progress -->
+  <div id="prog"></div>
+
+  <!-- Cursor -->
+  <div class="c-dot"></div>
+  <div class="c-ring"></div>
+
+  <!-- Preloader -->
+  <div id="preload">
+    <div class="pre-logo">APE<span>X</span></div>
+    <div class="pre-bar"></div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mob" id="mob">
+    <a href="#services" onclick="closeMob()">Services</a>
+    <div class="mob-line"></div>
+    <a href="#how"      onclick="closeMob()">How It Works</a>
+    <div class="mob-line"></div>
+    <a href="#pricing"  onclick="closeMob()">Pricing</a>
+    <div class="mob-line"></div>
+    <a href="#gallery"  onclick="closeMob()">Before & After</a>
+    <div class="mob-line"></div>
+    <a href="#contact"  onclick="closeMob()">Contact</a>
+    <div class="mob-line"></div>
+    <a href="#" target="_blank" rel="noopener" style="color:var(--blue)">Book Now ↗</a>
+  </div>
+
+  <!-- Nav -->
+  <nav id="nav">
+    <a href="#home" class="nav-logo">APE<span>X</span></a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#how">How It Works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#gallery">Before & After</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="#" target="_blank" rel="noopener" class="nav-cta">Book Now</a>
+    <button class="ham" id="ham" onclick="toggleMob()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero" id="home">
+    <div class="hero__grid"></div>
+    <div class="hero__glow" id="heroGlow"></div>
+    <div class="hero__scan"></div>
+    <div class="hero__corner hero__corner--tl"></div>
+    <div class="hero__corner hero__corner--tr"></div>
+    <div class="hero__corner hero__corner--bl"></div>
+    <div class="hero__corner hero__corner--br"></div>
+
+    <!-- Car SVG silhouette -->
+    <svg class="hero__car" viewBox="0 0 640 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Body -->
+      <path d="M 30 195 L 30 160 C 38 140 60 125 88 118 L 145 65 L 188 22 C 202 10 230 5 260 5 L 380 5 C 410 5 438 10 452 22 L 495 65 L 552 118 C 580 125 602 140 610 160 L 610 195 Z" stroke="currentColor" stroke-width="1.2" fill="rgba(0,170,255,0.04)"/>
+      <!-- Windows -->
+      <path d="M 155 65 L 192 26 C 205 13 228 8 258 8 L 316 8 L 316 65 Z" stroke="currentColor" stroke-width="1" fill="rgba(0,170,255,0.07)"/>
+      <path d="M 322 8 L 382 8 C 412 8 436 13 449 26 L 485 65 L 322 65 Z" stroke="currentColor" stroke-width="1" fill="rgba(0,170,255,0.07)"/>
+      <!-- Front wheel arch -->
+      <path d="M 88 118 Q 100 100 120 95 L 225 95 L 225 195 L 88 195" stroke="currentColor" stroke-width="1.2" fill="rgba(0,170,255,0.03)"/>
+      <!-- Rear wheel arch -->
+      <path d="M 415 95 L 520 95 Q 540 100 552 118 L 552 195 L 415 195" stroke="currentColor" stroke-width="1.2" fill="rgba(0,170,255,0.03)"/>
+      <!-- Front wheel -->
+      <circle cx="162" cy="205" r="50" stroke="currentColor" stroke-width="1.2" fill="rgba(0,170,255,0.03)"/>
+      <circle cx="162" cy="205" r="30" stroke="currentColor" stroke-width="0.8" fill="rgba(0,170,255,0.04)"/>
+      <circle cx="162" cy="205" r="8"  fill="currentColor" opacity="0.2"/>
+      <!-- Rear wheel -->
+      <circle cx="478" cy="205" r="50" stroke="currentColor" stroke-width="1.2" fill="rgba(0,170,255,0.03)"/>
+      <circle cx="478" cy="205" r="30" stroke="currentColor" stroke-width="0.8" fill="rgba(0,170,255,0.04)"/>
+      <circle cx="478" cy="205" r="8"  fill="currentColor" opacity="0.2"/>
+      <!-- Ground reflection -->
+      <line x1="20" y1="256" x2="620" y2="256" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>
+      <ellipse cx="320" cy="256" rx="250" ry="4" fill="currentColor" opacity="0.04"/>
+      <!-- Animated glow sweep -->
+      <rect x="0" y="0" width="640" height="260" fill="url(#sweep)" opacity="0.6">
+        <animate attributeName="opacity" values="0;0.6;0" dur="4s" repeatCount="indefinite"/>
+      </rect>
+      <defs>
+        <linearGradient id="sweep" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stop-color="transparent"/>
+          <stop offset="40%"  stop-color="transparent"/>
+          <stop offset="50%"  stop-color="rgba(0,170,255,0.12)"/>
+          <stop offset="60%"  stop-color="transparent"/>
+          <stop offset="100%" stop-color="transparent"/>
+          <animateTransform attributeName="gradientTransform" type="translate" from="-1 0" to="2 0" dur="4s" repeatCount="indefinite"/>
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="wrap">
+      <div class="hero__content">
+        <p class="hero__eyebrow">Dubai, UAE &nbsp;·&nbsp; Mobile Car Care</p>
+        <h1 class="hero__heading">
+          <span class="ln" style="color:var(--silver-lt);font-weight:600;font-size:0.65em;letter-spacing:0.12em">Premium Mobile Detailing</span>
+          <span class="ln"><span class="hl">Car Care</span></span>
+          <span class="ln">Your Door.</span>
+        </h1>
+        <p class="hero__sub">
+          <span>Steam Wash</span> &nbsp;·&nbsp; <span>Deep Detailing</span> &nbsp;·&nbsp; <span>Window Tinting</span> &nbsp;·&nbsp; <span>Car Wrapping</span>
+        </p>
+        <div class="hero__actions">
+          <a href="#" target="_blank" rel="noopener" class="btn btn-blue">Book on WhatsApp →</a>
+          <a href="#services" class="btn btn-outline">View Services</a>
+        </div>
+        <div class="hero__stats">
+          <div>
+            <div class="hero-stat__n" data-target="7500" data-suffix="+">0</div>
+            <div class="hero-stat__l">Cars Serviced</div>
+          </div>
+          <div>
+            <div class="hero-stat__n" data-target="5500" data-suffix="+">0</div>
+            <div class="hero-stat__l">Happy Customers</div>
+          </div>
+          <div>
+            <div class="hero-stat__n" data-target="225" data-suffix="K+">0</div>
+            <div class="hero-stat__l">Gallons of Water Saved</div>
+          </div>
+          <div>
+            <div class="hero-stat__n" data-target="15" data-suffix="K+">0</div>
+            <div class="hero-stat__l">Customer Hours Saved</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Scroll indicator -->
+    <div class="hero__scroll">
+      <span class="hero__scroll-text">Scroll</span>
+      <div class="hero__scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ══ MARQUEE ══ -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span class="marquee__item">Steam Cleaning</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Deep Detailing</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Window Tinting</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Car Wrapping</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Paint Protection Film</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Ceramic Coating</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Doorstep Service</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">All of Dubai</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Book via WhatsApp</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Eco-Friendly Steam</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Steam Cleaning</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Deep Detailing</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Window Tinting</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Car Wrapping</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Paint Protection Film</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Ceramic Coating</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Doorstep Service</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">All of Dubai</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Book via WhatsApp</span><span class="marquee__sep">◆</span>
+      <span class="marquee__item">Eco-Friendly Steam</span><span class="marquee__sep">◆</span>
+    </div>
+  </div>
+
+  <!-- ══ STATS BAND ══ -->
+  <div class="stats-band">
+    <div class="wrap">
+      <div class="stats-band__grid stagger">
+        <div class="stat-item">
+          <div class="stat-item__n" data-target="10" data-suffix="+ yrs">0</div>
+          <div class="stat-item__divider"></div>
+          <div class="stat-item__l">Industry Experience</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-item__n" data-target="7500" data-suffix="+">0</div>
+          <div class="stat-item__divider"></div>
+          <div class="stat-item__l">Cars Detailed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-item__n" data-target="100" data-suffix="%">0</div>
+          <div class="stat-item__divider"></div>
+          <div class="stat-item__l">Doorstep Service</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-item__n" data-target="4" data-suffix=" hrs">0</div>
+          <div class="stat-item__divider"></div>
+          <div class="stat-item__l">Avg Time Saved Per Client</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SERVICES ══ -->
+  <section class="services" id="services">
+    <div class="wrap">
+      <div class="services__head reveal">
+        <p class="sec-label">What We Do</p>
+        <h2 class="sec-title">Our <span>Services</span></h2>
+        <p class="sec-sub" style="max-width:520px">Six specialist services, one certified technician, delivered wherever your car is parked.</p>
+      </div>
+      <div class="services__grid stagger">
+
+        <!-- Steam Cleaning -->
+        <div class="svc-card">
+          <div class="svc-card__num">01</div>
+          <svg class="svc-card__icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M14 34 C14 28 10 22 10 16 C10 10 14 6 18 6" stroke-linecap="round"/>
+            <path d="M22 38 C22 30 18 24 18 18 C18 12 22 8 26 8" stroke-linecap="round"/>
+            <path d="M30 34 C30 28 26 22 26 16 C26 10 30 6 34 6" stroke-linecap="round"/>
+          </svg>
+          <h3 class="svc-card__name">Steam Cleaning</h3>
+          <p class="svc-card__desc">Eco-friendly 180°C steam kills 99.9% of bacteria, dissolves grease and eliminates odours — interior and exterior — using almost zero water.</p>
+          <span class="svc-card__link">Explore service →</span>
+        </div>
+
+        <!-- Car Detailing -->
+        <div class="svc-card">
+          <div class="svc-card__num">02</div>
+          <svg class="svc-card__icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M22 4 L24.8 13.8 H35 L26.6 19.6 L29.4 29.4 L22 23.6 L14.6 29.4 L17.4 19.6 L9 13.8 H19.2 Z" stroke-linejoin="round"/>
+            <circle cx="22" cy="37" r="2" fill="currentColor" stroke="none"/>
+          </svg>
+          <h3 class="svc-card__name">Car Detailing</h3>
+          <p class="svc-card__desc">Full interior deep-clean, paint decontamination, clay bar treatment, leather conditioning and engine bay cleaning for a showroom finish.</p>
+          <span class="svc-card__link">Explore service →</span>
+        </div>
+
+        <!-- Window Tinting -->
+        <div class="svc-card">
+          <div class="svc-card__num">03</div>
+          <svg class="svc-card__icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="22" cy="22" r="10"/>
+            <line x1="22" y1="4" x2="22" y2="10"/>
+            <line x1="22" y1="34" x2="22" y2="40"/>
+            <line x1="4" y1="22" x2="10" y2="22"/>
+            <line x1="34" y1="22" x2="40" y2="22"/>
+            <line x1="9.2" y1="9.2" x2="13.4" y2="13.4"/>
+            <line x1="30.6" y1="30.6" x2="34.8" y2="34.8"/>
+            <path d="M 22 12 L 22 22 L 28 28" stroke-linecap="round" opacity="0.4"/>
+          </svg>
+          <h3 class="svc-card__name">Window Tinting</h3>
+          <p class="svc-card__desc">3M and premium sun-protective films that block up to 99% UV, reduce interior heat, and add privacy — for cars, homes and commercial spaces.</p>
+          <span class="svc-card__link">Explore service →</span>
+        </div>
+
+        <!-- Car Wrapping -->
+        <div class="svc-card">
+          <div class="svc-card__num">04</div>
+          <svg class="svc-card__icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.4">
+            <rect x="8" y="14" width="28" height="18" rx="1"/>
+            <path d="M 8 20 L 36 20" stroke-dasharray="3 2"/>
+            <path d="M 8 26 L 36 26" stroke-dasharray="3 2"/>
+            <path d="M 4 14 C 4 10 8 8 14 8 L 30 8 C 36 8 40 10 40 14" stroke-linecap="round"/>
+          </svg>
+          <h3 class="svc-card__name">Car Wrapping</h3>
+          <p class="svc-card__desc">Full or partial vehicle wraps in matte, gloss, satin and chrome finishes. Change your car's colour without repainting — fully reversible.</p>
+          <span class="svc-card__link">Explore service →</span>
+        </div>
+
+        <!-- Paint Protection -->
+        <div class="svc-card">
+          <div class="svc-card__num">05</div>
+          <svg class="svc-card__icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M22 6 L36 12 L36 24 C36 32 29 38 22 40 C15 38 8 32 8 24 L8 12 Z" stroke-linejoin="round"/>
+            <path d="M16 22 L20 26 L28 18" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3 class="svc-card__name">Paint Protection Film</h3>
+          <p class="svc-card__desc">Self-healing TPU film guards your paint against stone chips, scratches and road debris. Invisible protection, lasting years.</p>
+          <span class="svc-card__link">Explore service →</span>
+        </div>
+
+        <!-- Ceramic Coating -->
+        <div class="svc-card">
+          <div class="svc-card__num">06</div>
+          <svg class="svc-card__icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M22 8 C22 8 12 18 12 26 C12 33 16.5 38 22 38 C27.5 38 32 33 32 26 C32 18 22 8 22 8 Z"/>
+            <path d="M16 28 C17 24 20 22 22 20" stroke-linecap="round" opacity="0.5"/>
+          </svg>
+          <h3 class="svc-card__name">Ceramic Coating</h3>
+          <p class="svc-card__desc">Professional-grade nano-ceramic coating that bonds to your paintwork, delivering hydrophobic protection, depth of shine and lasting gloss.</p>
+          <span class="svc-card__link">Explore service →</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ HOW IT WORKS ══ -->
+  <section class="how" id="how">
+    <div class="wrap">
+      <div class="how__head reveal">
+        <p class="sec-label">The Process</p>
+        <h2 class="sec-title">How It <span>Works</span></h2>
+        <p class="sec-sub" style="max-width:480px;margin:0 auto">No queues, no driving, no waiting. Three steps and your car comes to you.</p>
+      </div>
+      <div class="how__grid stagger">
+        <div class="how-step">
+          <div class="how-step__num">01</div>
+          <div class="how-step__icon">📱</div>
+          <h3 class="how-step__name">Book in Seconds</h3>
+          <p class="how-step__desc">Open the APEX app or message us on WhatsApp. Choose your package, pick a date and time, confirm your location. Done in under 60 seconds.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step__num">02</div>
+          <div class="how-step__icon">🚐</div>
+          <h3 class="how-step__name">We Come to You</h3>
+          <p class="how-step__desc">A certified APEX technician arrives at your home, office, gym or mall — wherever your car is. No driving required. We bring everything.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step__num">03</div>
+          <div class="how-step__icon">✨</div>
+          <h3 class="how-step__name">Drive Spotless</h3>
+          <p class="how-step__desc">Sit back and carry on with your day. When we're done, your car is showroom-clean. We even send you a completion report with photos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ WHY APEX ══ -->
+  <section class="why">
+    <div class="wrap">
+      <div class="why__head reveal">
+        <p class="sec-label">Why Choose Us</p>
+        <h2 class="sec-title">Built Different.<br><span>Built Better.</span></h2>
+        <p class="sec-sub" style="max-width:500px;margin:0 auto">We're not a car wash — we're a certified mobile detailing operation backed by 35 years of UAE automotive experience.</p>
+      </div>
+      <div class="why__grid stagger">
+        <div class="why-card">
+          <span class="why-card__icon">🌿</span>
+          <h4 class="why-card__name">Eco-Friendly Steam</h4>
+          <p class="why-card__desc">We use as little as 1 litre of water per session. Traditional car washes waste up to 300 litres. Better for your car, better for Dubai.</p>
+        </div>
+        <div class="why-card">
+          <span class="why-card__icon">🏆</span>
+          <h4 class="why-card__name">35 Years Heritage</h4>
+          <p class="why-card__desc">Backed by over a decade of UAE automotive expertise — every technician is certified, insured, and deployed to the highest professional standards.</p>
+        </div>
+        <div class="why-card">
+          <span class="why-card__icon">📍</span>
+          <h4 class="why-card__name">We Come to You</h4>
+          <p class="why-card__desc">No queues, no driving across the city. Book once and our team arrives at your exact location — home, office, mall, gym, wherever.</p>
+        </div>
+        <div class="why-card">
+          <span class="why-card__icon">🔒</span>
+          <h4 class="why-card__name">Certified Technicians</h4>
+          <p class="why-card__desc">Every APEX technician is trained, background-checked and insured. Your car is in professional hands, every single time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ BEFORE & AFTER ══ -->
+  <section class="ba" id="gallery">
+    <div class="wrap">
+      <div class="ba__head reveal">
+        <p class="sec-label">The Results</p>
+        <h2 class="sec-title">Before <span>&</span> After</h2>
+        <p class="sec-sub" style="max-width:480px;margin:0 auto">Drag the slider to see what a full APEX detail does to a Dubai-dusty car.</p>
+      </div>
+      <div class="ba__comp reveal" id="baComp">
+        <!-- Before panel -->
+        <div class="ba__before">
+          <div class="ba__before-bg"></div>
+          <span class="ba__tag">Before</span>
+        </div>
+        <!-- After panel -->
+        <div class="ba__after" id="baAfter">
+          <div class="ba__after-bg"></div>
+          <span class="ba__tag ba__after-tag">After</span>
+        </div>
+        <!-- Divider line & handle -->
+        <div class="ba__line" id="baLine"></div>
+        <div class="ba__handle" id="baHandle">
+          <span class="ba__handle-arrows">◀ ▶</span>
+        </div>
+        <!-- Range input (invisible but functional) -->
+        <input type="range" class="ba__slider" id="baSlider" min="0" max="100" value="50" aria-label="Before/After comparison">
+      </div>
+      <p class="ba__caption reveal">Desert sand, water marks, interior dust — cleared in a single session with our Platinum Steam package.</p>
+    </div>
+  </section>
+
+  <!-- ══ PRICING ══ -->
+  <section class="pricing" id="pricing">
+    <div class="wrap">
+      <div class="pricing__head reveal">
+        <p class="sec-label">Packages</p>
+        <h2 class="sec-title">Simple <span>Pricing</span></h2>
+        <p class="sec-sub" style="max-width:480px;margin:0 auto">All packages valid one month from purchase date. Delivered at your location.</p>
+      </div>
+      <div class="pricing__grid stagger">
+
+        <!-- Basic -->
+        <div class="price-card">
+          <p class="price-tier">Basic</p>
+          <p class="price-val"><span>AED </span>225</p>
+          <p class="price-note">25% savings · Valid 1 month</p>
+          <div class="price-divider"></div>
+          <ul class="price-feat">
+            <li>Exterior steam wash</li>
+            <li>Tyre & rim clean</li>
+            <li>Interior vacuum</li>
+            <li>Window wipe (exterior)</li>
+            <li class="na">Interior steam clean</li>
+            <li class="na">Engine bay</li>
+          </ul>
+          <p class="price-savings">Save 25%</p>
+          <a href="#?text=I'd%20like%20to%20book%20the%20Basic%20package" target="_blank" rel="noopener" class="btn btn-outline" style="width:100%;text-align:center">Book Basic</a>
+        </div>
+
+        <!-- Silver -->
+        <div class="price-card">
+          <p class="price-tier">Silver</p>
+          <p class="price-val"><span>AED </span>300</p>
+          <p class="price-note">30% savings · Valid 1 month</p>
+          <div class="price-divider"></div>
+          <ul class="price-feat">
+            <li>Everything in Basic</li>
+            <li>Interior steam clean</li>
+            <li>Dashboard & console wipe</li>
+            <li>Glass clean (interior)</li>
+            <li>Leather conditioning</li>
+            <li class="na">Engine bay</li>
+          </ul>
+          <p class="price-savings">Save 30%</p>
+          <a href="#?text=I'd%20like%20to%20book%20the%20Silver%20package" target="_blank" rel="noopener" class="btn btn-outline" style="width:100%;text-align:center">Book Silver</a>
+        </div>
+
+        <!-- Gold (featured) -->
+        <div class="price-card featured">
+          <p class="price-badge">Most Popular</p>
+          <p class="price-tier">Gold</p>
+          <p class="price-val"><span>AED </span>350</p>
+          <p class="price-note">35% savings · Valid 1 month</p>
+          <div class="price-divider"></div>
+          <ul class="price-feat">
+            <li>Everything in Silver</li>
+            <li>Engine bay steam</li>
+            <li>Tyre dressing</li>
+            <li>Odour eliminator</li>
+            <li>Paint surface wipe-down</li>
+            <li>Completion photo report</li>
+          </ul>
+          <p class="price-savings">Save 35%</p>
+          <a href="#?text=I'd%20like%20to%20book%20the%20Gold%20package" target="_blank" rel="noopener" class="btn btn-blue" style="width:100%;text-align:center">Book Gold</a>
+        </div>
+
+        <!-- Platinum -->
+        <div class="price-card">
+          <p class="price-tier">Platinum</p>
+          <p class="price-val"><span>AED </span>500</p>
+          <p class="price-note">40% savings · Valid 1 month</p>
+          <div class="price-divider"></div>
+          <ul class="price-feat">
+            <li>Everything in Gold</li>
+            <li>Paint decontamination</li>
+            <li>Clay bar treatment</li>
+            <li>Ceramic coating prep</li>
+            <li>Headlight polish</li>
+            <li>Priority scheduling</li>
+          </ul>
+          <p class="price-savings">Save 40%</p>
+          <a href="#?text=I'd%20like%20to%20book%20the%20Platinum%20package" target="_blank" rel="noopener" class="btn btn-dark" style="width:100%;text-align:center">Book Platinum</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TESTIMONIALS ══ -->
+  <section class="testimonials">
+    <div class="wrap">
+      <div class="testimonials__inner reveal">
+        <p class="sec-label" style="justify-content:center">
+          <span style="width:24px;height:1px;background:var(--blue);opacity:0.6;display:inline-block"></span>
+          &nbsp; Customer Reviews &nbsp;
+        </p>
+        <div class="t-mark">"</div>
+        <div class="t-quotes" id="tQ">
+          <div class="t-quote active">
+            <p class="t-text">My 4x4 came back from a week in the desert looking like it just left the showroom. The APEX team were on time, professional and thorough. I won't go to a car wash again.</p>
+            <p class="t-stars">★ ★ ★ ★ ★</p>
+            <p class="t-author">Ahmed K.</p>
+            <p class="t-role">Downtown, Dubai</p>
+          </div>
+          <div class="t-quote">
+            <p class="t-text">Booked the Silver package for my daily driver. They came to my office car park, and by the time I finished my meetings the car was spotless. This is the only way to wash a car in Dubai.</p>
+            <p class="t-stars">★ ★ ★ ★ ★</p>
+            <p class="t-author">Sarah M.</p>
+            <p class="t-role">JVC, Dubai</p>
+          </div>
+          <div class="t-quote">
+            <p class="t-text">The window tinting job was flawless — zero bubbles, perfect cut. And the whole time they were professional, clean and quick. The ceramic coating they did last month still looks incredible.</p>
+            <p class="t-stars">★ ★ ★ ★ ★</p>
+            <p class="t-author">Mohammed R.</p>
+            <p class="t-role">Business Bay, Dubai</p>
+          </div>
+        </div>
+        <div class="t-dots" id="tDots">
+          <button class="t-dot on" data-i="0" aria-label="Review 1"></button>
+          <button class="t-dot" data-i="1" aria-label="Review 2"></button>
+          <button class="t-dot" data-i="2" aria-label="Review 3"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ COVERAGE ══ -->
+  <section class="coverage">
+    <div class="wrap">
+      <div class="coverage__grid">
+        <div class="reveal">
+          <p class="sec-label">Service Area</p>
+          <h2 class="sec-title">We Cover<br><span>All of Dubai</span></h2>
+          <p class="sec-sub">From Palm Jumeirah to Al Quoz, from Business Bay to Arabian Ranches — if your car is in Dubai, we come to it.</p>
+          <div class="coverage__areas stagger">
+            <div class="area-tag">Al Quoz</div>
+            <div class="area-tag">Business Bay</div>
+            <div class="area-tag">Downtown Dubai</div>
+            <div class="area-tag">JBR</div>
+            <div class="area-tag">JVC</div>
+            <div class="area-tag">Palm Jumeirah</div>
+            <div class="area-tag">Dubai Marina</div>
+            <div class="area-tag">Jumeirah</div>
+            <div class="area-tag">DIFC</div>
+            <div class="area-tag">Mirdif</div>
+            <div class="area-tag">Arabian Ranches</div>
+            <div class="area-tag">Dubai Hills</div>
+            <div class="area-tag">Motor City</div>
+            <div class="area-tag">Silicon Oasis</div>
+            <div class="area-tag">Deira</div>
+            <div class="area-tag">Bur Dubai</div>
+          </div>
+          <p class="coverage__cta-note">
+            Don't see your area? WhatsApp us — we cover most of the UAE and are always expanding our reach.<br>
+            <a href="#" target="_blank" rel="noopener" style="color:var(--blue);font-weight:500">Ask about your location →</a>
+          </p>
+        </div>
+        <div class="reveal" style="transition-delay:0.15s">
+          <div class="coverage__visual">
+            <div class="coverage__map-grid"></div>
+            <span class="coverage__title-overlay">Dubai, UAE</span>
+            <!-- Simulated location pins -->
+            <div class="coverage__pin" style="top:48%;left:44%" data-area="Al Quoz"></div>
+            <div class="coverage__pin" style="top:35%;left:55%" data-area="Downtown"></div>
+            <div class="coverage__pin" style="top:22%;left:30%" data-area="Marina"></div>
+            <div class="coverage__pin" style="top:60%;left:62%" data-area="Mirdif"></div>
+            <div class="coverage__pin" style="top:28%;left:70%" data-area="DIFC"></div>
+            <div class="coverage__pin" style="top:15%;left:18%" data-area="Palm"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ APP CTA ══ -->
+  <div class="app-cta" id="contact">
+    <div class="wrap">
+      <div class="app-cta__inner reveal">
+        <p class="sec-label" style="justify-content:center">
+          <span style="width:24px;height:1px;background:var(--blue);opacity:0.6;display:inline-block;margin-right:0.8rem"></span>
+          Mobile App &nbsp;
+        </p>
+        <h2 class="app-cta__title">Book in <span>60 seconds.</span><br>We handle the rest.</h2>
+        <p class="app-cta__sub">Download the APEX app or WhatsApp us directly. Browse packages, pick a slot, track your technician live — all from your phone. Serving all of Dubai.</p>
+        <div class="app-badges">
+          <a href="#" target="_blank" rel="noopener" class="app-badge">
+            <span class="app-badge__icon">💬</span>
+            <div class="app-badge__text">
+              <p class="app-badge__small">Book via</p>
+              <p class="app-badge__store">WhatsApp</p>
+            </div>
+          </a>
+          <a href="#" class="app-badge">
+            <span class="app-badge__icon">📞</span>
+            <div class="app-badge__text">
+              <p class="app-badge__small">Call us</p>
+              <p class="app-badge__store">+971 5X XX XXXXX</p>
+            </div>
+          </a>
+          <a href="mailto:hello@apexdetail.ae" class="app-badge">
+            <span class="app-badge__icon">✉️</span>
+            <div class="app-badge__text">
+              <p class="app-badge__small">Email</p>
+              <p class="app-badge__store">hello@apexdetail.ae</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div class="wrap">
+      <div class="footer__grid">
+        <div>
+          <p class="footer__logo">APE<span>X</span></p>
+          <p class="footer__tagline">
+            Be Innovative. Be Convenient.<br>
+            Premium mobile car care, delivered.<br>
+            Dubai, UAE.
+          </p>
+        </div>
+        <div>
+          <p class="footer__col-title">Services</p>
+          <ul class="footer__list">
+            <li><a href="#services">Steam Cleaning</a></li>
+            <li><a href="#services">Car Detailing</a></li>
+            <li><a href="#services">Window Tinting</a></li>
+            <li><a href="#services">Car Wrapping</a></li>
+            <li><a href="#services">Paint Protection</a></li>
+            <li><a href="#services">Ceramic Coating</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-title">Company</p>
+          <ul class="footer__list">
+            <li><a href="#how">How It Works</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#gallery">Before & After</a></li>
+            <li><a href="#">Our Website</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-title">Contact</p>
+          <ul class="footer__list">
+            <li><a href="#">+971 5X XX XXXXX</a></li>
+            <li><a href="mailto:hello@apexdetail.ae">hello@apexdetail.ae</a></li>
+            <li><a href="#" target="_blank" rel="noopener">WhatsApp Booking</a></li>
+            <li><a href="#">apexdetail.ae</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">&copy; 2025 APEX Car Care — Concept Redesign</p>
+        <div class="footer__social">
+          <a href="#">Instagram</a>
+          <a href="#">Facebook</a>
+          <a href="#" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══ WHATSAPP FLOAT ══ -->
+  <a class="wa" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <span class="wa-label">Book a wash →</span>
+    <div class="wa-btn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+    </div>
+  </a>
+
+  <script>
+    /* ── Preloader ── */
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('preload').classList.add('out');
+        document.body.style.overflow = '';
+      }, 1900);
+    });
+
+    /* ── Scroll Progress ── */
+    const prog = document.getElementById('prog');
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      prog.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+    }, { passive: true });
+
+    /* ── Custom Cursor ── */
+    const dot = document.querySelector('.c-dot');
+    const ring = document.querySelector('.c-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    window.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    });
+    (function tick() {
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(tick);
+    })();
+
+    /* ── Nav scroll ── */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('on', window.scrollY > 70), { passive: true });
+
+    /* ── Mobile Menu ── */
+    const mob = document.getElementById('mob');
+    const ham = document.getElementById('ham');
+    const spans = ham.querySelectorAll('span');
+    let mobOpen = false;
+    function toggleMob() {
+      mobOpen = !mobOpen;
+      mob.classList.toggle('open', mobOpen);
+      spans[0].style.transform = mobOpen ? 'rotate(45deg) translate(4px,5px)'  : '';
+      spans[1].style.opacity   = mobOpen ? '0' : '';
+      spans[2].style.transform = mobOpen ? 'rotate(-45deg) translate(4px,-5px)' : '';
+    }
+    function closeMob() {
+      mobOpen = false; mob.classList.remove('open');
+      spans.forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+    }
+
+    /* ── Scroll Reveals ── */
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal, .stagger').forEach(el => obs.observe(el));
+
+    /* ── Counter animation ── */
+    function runCounter(el) {
+      const target = parseFloat(el.dataset.target);
+      const suffix = el.dataset.suffix || '';
+      if (isNaN(target)) return;
+      const duration = 2000;
+      const steps = duration / 14;
+      const step = target / steps;
+      let current = 0;
+      const id = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(id); }
+        el.textContent = (target >= 100 ? Math.floor(current).toLocaleString() : Math.floor(current)) + suffix;
+      }, 14);
+    }
+    const cntObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { runCounter(e.target); cntObs.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-target]').forEach(el => cntObs.observe(el));
+
+    /* ── Hero glow parallax ── */
+    const heroGlow = document.getElementById('heroGlow');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY < window.innerHeight * 1.2) {
+        heroGlow.style.transform = `translateY(${window.scrollY * 0.4}px)`;
+      }
+    }, { passive: true });
+
+    /* ── Before/After slider ── */
+    const baSlider = document.getElementById('baSlider');
+    const baAfter  = document.getElementById('baAfter');
+    const baLine   = document.getElementById('baLine');
+    const baHandle = document.getElementById('baHandle');
+    function updateBA(val) {
+      baAfter.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
+      baLine.style.left   = val + '%';
+      baHandle.style.left = val + '%';
+    }
+    updateBA(50);
+    baSlider.addEventListener('input', () => updateBA(parseInt(baSlider.value)));
+
+    /* ── Testimonial rotator ── */
+    const tQuotes = document.querySelectorAll('.t-quote');
+    const tDots   = document.querySelectorAll('.t-dot');
+    let tCur = 0;
+    function showT(i) {
+      tQuotes[tCur].classList.remove('active');
+      tDots[tCur].classList.remove('on');
+      tCur = i;
+      tQuotes[tCur].classList.add('active');
+      tDots[tCur].classList.add('on');
+    }
+    tDots.forEach(d => d.addEventListener('click', () => { showT(parseInt(d.dataset.i)); clearInterval(tTimer); tTimer = setInterval(() => showT((tCur + 1) % tQuotes.length), 5500); }));
+    let tTimer = setInterval(() => showT((tCur + 1) % tQuotes.length), 5500);
+    document.getElementById('tQ').addEventListener('mouseenter', () => clearInterval(tTimer));
+    document.getElementById('tQ').addEventListener('mouseleave', () => { tTimer = setInterval(() => showT((tCur + 1) % tQuotes.length), 5500); });
+  </script>
+</body>
+</html>
