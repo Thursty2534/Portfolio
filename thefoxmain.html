@@ -938,19 +938,19 @@
   <div class="container">
     <div class="stats-grid stagger">
       <div class="stat-item">
-        <div class="stat-num" data-target="8">0<sup>+</sup></div>
+        <div class="stat-num" data-target="8" data-suffix="+">0<sup>+</sup></div>
         <div class="stat-label">Years in Hospitality</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num" data-target="100">0<sup>%</sup></div>
+        <div class="stat-num" data-target="100" data-suffix="%">0<sup>%</sup></div>
         <div class="stat-label">Custom Code</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num" data-target="4">0</div>
+        <div class="stat-num" data-target="4" data-suffix="">0</div>
         <div class="stat-label">Core Services</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num" data-target="1">0</div>
+        <div class="stat-num" data-target="1" data-suffix="">0</div>
         <div class="stat-label">City. Dubai.</div>
       </div>
     </div>
@@ -1249,26 +1249,51 @@
   document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .stagger').forEach(el => observer.observe(el));
 
   /* ─── STAT COUNTERS ──────────────────────────────────────── */
+  const statStrip = document.querySelector('.stats-strip');
   const statNums  = document.querySelectorAll('.stat-num[data-target]');
-  const suffixes  = ['+', '%', '', ''];
-  let counted = false;
 
-  new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && !counted) {
+  if (statStrip && statNums.length) {
+    let counted = false;
+
+    const render = (el, val, suffix) =>
+      el.innerHTML = val + (suffix ? `<sup>${suffix}</sup>` : '');
+
+    const runCounters = () => {
+      if (counted) return;
       counted = true;
-      statNums.forEach((el, i) => {
-        const target = parseInt(el.dataset.target);
-        const suffix = suffixes[i] ?? '';
-        let val = 0;
-        const step  = target / 50;
-        const timer = setInterval(() => {
-          val = Math.min(val + step, target);
-          el.innerHTML = Math.floor(val) + (suffix ? `<sup>${suffix}</sup>` : '');
-          if (val >= target) clearInterval(timer);
-        }, 28);
+      statNums.forEach(el => {
+        const target   = parseInt(el.dataset.target, 10) || 0;
+        const suffix   = el.dataset.suffix || '';
+        const duration = 1600;
+        let start = null;
+        const tick = now => {
+          if (start === null) start = now;
+          const p = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+          render(el, Math.round(eased * target), suffix);
+          if (p < 1) requestAnimationFrame(tick);
+          else render(el, target, suffix); // snap to exact final value
+        };
+        requestAnimationFrame(tick);
       });
-    }
-  }, { threshold: 0.5 }).observe(document.querySelector('.stats-strip'));
+    };
+
+    // Low threshold + rootMargin fires reliably even when the strip is taller
+    // than the viewport (e.g. the 2x2 wrap on mobile Safari).
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { runCounters(); obs.disconnect(); }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+    io.observe(statStrip);
+
+    // Fallbacks: already in view on load, or IntersectionObserver unsupported.
+    const inView = () => {
+      const r = statStrip.getBoundingClientRect();
+      return r.top < window.innerHeight && r.bottom > 0;
+    };
+    if (!('IntersectionObserver' in window) || inView()) runCounters();
+  }
 
   /* ─── PARALLAX ORB ───────────────────────────────────────── */
   const orb = document.querySelector('.hero__orb');
