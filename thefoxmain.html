@@ -445,6 +445,32 @@
     }
     .service-card:hover .service-card__arrow { opacity: 1; transform: translateX(0); }
 
+    .service-card__pricing {
+      margin-top: 1.6rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--divider);
+    }
+    .price-tier { margin-bottom: 1.1rem; }
+    .price-tier__label {
+      display: block;
+      font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 0.4rem;
+    }
+    .price-tier__value {
+      font-family: var(--font-display);
+      font-size: 1.15rem; font-weight: 500; line-height: 1.35;
+      color: var(--gold-pale);
+    }
+    .price-tier__range {
+      font-family: var(--font-body);
+      font-size: 0.62rem; letter-spacing: 0.02em;
+      color: var(--text-secondary);
+    }
+    .service-card__price-note {
+      font-size: 0.58rem; font-style: italic; letter-spacing: 0.04em;
+      color: var(--text-muted); margin-top: 0.4rem; line-height: 1.6;
+    }
+
     /* ─── WORK ────────────────────────────────────────────────── */
     .work-grid {
       display: grid;
@@ -889,6 +915,17 @@
         </svg>
         <h3 class="service-card__title">Web Design &amp; Optimisation</h3>
         <p class="service-card__desc">Sharp, fast websites built to convert. No templates. Pure code, built for performance in the Dubai market and beyond.</p>
+        <div class="service-card__pricing">
+          <div class="price-tier">
+            <span class="price-tier__label">Homepage</span>
+            <div class="price-tier__value">from AED 1,500 <span class="price-tier__range">— up to AED 3,000 depending on complexity</span></div>
+          </div>
+          <div class="price-tier">
+            <span class="price-tier__label">Full Site — 3–4 Pages</span>
+            <div class="price-tier__value">from AED 4,000 <span class="price-tier__range">— up to AED 7,000 depending on complexity</span></div>
+          </div>
+          <p class="service-card__price-note">Introductory pricing for our early clients.</p>
+        </div>
         <div class="service-card__arrow">Learn more →</div>
       </div>
 
