@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brasa — Wood-Fired Mexican Cantina · Concept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&family=Sacramento&display=swap" rel="stylesheet">
+  <style>
+    /* ══ Reset ══ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Jost', sans-serif; background: var(--charcoal); color: var(--cream); overflow-x: hidden; cursor: none; }
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+    button { background: none; border: none; cursor: none; font-family: inherit; }
+
+    /* ══ Tokens ══ */
+    :root {
+      --charcoal:         #16110C;
+      --charcoal-mid:     #1E1710;
+      --charcoal-light:   #281E14;
+      --terracotta:       #C4622D;
+      --terracotta-pale:  #D4884E;
+      --terracotta-deep:  #9A3D18;
+      --terracotta-glow:  rgba(196,98,45,0.18);
+      --amber:            #D08828;
+      --amber-pale:       #E8A84A;
+      --sand:             #E8D5B0;
+      --cream:            #F8F2E6;
+      --sage:             #7A9E7E;
+      --white:            #FFFEF9;
+      --divider:          rgba(196,98,45,0.2);
+      --ease:             cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* ══ Scroll Progress ══ */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 2px; width: 0;
+      background: linear-gradient(90deg, var(--terracotta), var(--amber));
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    /* ══ Cursor ══ */
+    .c-dot, .c-ring {
+      position: fixed; border-radius: 50%; pointer-events: none;
+      z-index: 9999; transform: translate(-50%,-50%);
+    }
+    .c-dot  { width: 6px; height: 6px; background: var(--terracotta); transition: transform 0.1s; }
+    .c-ring { width: 30px; height: 30px; border: 1.5px solid rgba(196,98,45,0.45); transition: width 0.3s, height 0.3s, border-color 0.3s; }
+    body:has(a:hover) .c-ring,
+    body:has(button:hover) .c-ring { width: 46px; height: 46px; border-color: var(--terracotta); }
+
+    /* ══ Preloader ══ */
+    #preloader {
+      position: fixed; inset: 0; z-index: 10000; background: var(--charcoal);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.4rem;
+      transition: opacity 0.6s ease 0.1s;
+    }
+    #preloader.out { opacity: 0; pointer-events: none; }
+    .pre-name {
+      font-family: 'Cormorant Garamond', serif; font-size: 3.2rem; font-weight: 300;
+      letter-spacing: 0.3em; color: var(--cream);
+    }
+    .pre-name span { color: var(--terracotta); font-style: italic; }
+    .pre-bar { width: 200px; height: 1px; background: rgba(248,242,230,0.12); position: relative; overflow: hidden; }
+    .pre-bar::after {
+      content: ''; position: absolute; top: 0; left: 0; height: 100%;
+      background: linear-gradient(90deg, var(--terracotta), var(--amber));
+      animation: preLoad 1.8s var(--ease) forwards;
+    }
+    @keyframes preLoad { from { width:0 } to { width:100% } }
+
+    /* ══ Mobile Overlay ══ */
+    .mob {
+      position: fixed; inset: 0; z-index: 400; background: var(--charcoal);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s;
+    }
+    .mob.open { opacity: 1; pointer-events: all; }
+    .mob a {
+      font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 300;
+      letter-spacing: 0.1em; color: var(--cream); transition: color 0.3s;
+    }
+    .mob a:hover { color: var(--terracotta); }
+    .mob-divider { width: 40px; height: 1px; background: var(--divider); }
+
+    /* ══ Nav ══ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      padding: 1.6rem 3rem;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.4s, padding 0.4s, border-color 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.on {
+      background: rgba(22,17,12,0.92); backdrop-filter: blur(18px);
+      padding: 1rem 3rem; border-color: var(--divider);
+    }
+    .nav-brand { display: flex; flex-direction: column; line-height: 1; }
+    .nav-brand__name {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 400;
+      letter-spacing: 0.15em; color: var(--cream);
+    }
+    .nav-brand__sub {
+      font-size: 0.48rem; font-weight: 600; letter-spacing: 0.42em; text-transform: uppercase;
+      color: var(--terracotta); margin-top: 3px;
+    }
+    .nav-links { display: flex; align-items: center; gap: 2.5rem; }
+    .nav-links a {
+      font-size: 0.65rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--sand); opacity: 0.75; transition: opacity 0.3s, color 0.3s;
+    }
+    .nav-links a:hover { opacity: 1; color: var(--amber); }
+    .nav-cta {
+      font-size: 0.62rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase;
+      padding: 0.65rem 1.5rem; border: 1px solid var(--terracotta); color: var(--terracotta);
+      transition: background 0.3s, color 0.3s;
+    }
+    .nav-cta:hover { background: var(--terracotta); color: var(--white); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; }
+    .hamburger span { display: block; width: 24px; height: 1.5px; background: var(--cream); transition: transform 0.3s, opacity 0.3s; }
+
+    /* ══ Hero ══ */
+    .hero {
+      position: relative; min-height: 100svh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; overflow: hidden;
+    }
+    .hero__fire {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 110% 55% at 50% 115%, rgba(196,98,45,0.38) 0%, rgba(208,136,40,0.18) 35%, transparent 65%),
+        radial-gradient(ellipse 50% 30% at 25% 95%, rgba(208,136,40,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 25% at 75% 95%, rgba(196,98,45,0.1) 0%, transparent 50%),
+        var(--charcoal);
+    }
+    .hero__grain {
+      position: absolute; inset: 0; z-index: 1; opacity: 0.038; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 250px 250px;
+    }
+    /* Ember particles */
+    .embers { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+    .ember {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,155,55,0.85); animation: riseEmber linear infinite;
+    }
+    .ember:nth-child(1) { width:3px;height:3px; bottom:8%; left:47%; animation-duration:5.2s; }
+    .ember:nth-child(2) { width:2px;height:2px; bottom:6%; left:52%; animation-duration:4.8s; animation-delay:1.4s; background: rgba(255,200,70,0.9); }
+    .ember:nth-child(3) { width:3px;height:3px; bottom:10%; left:49%; animation-duration:6.1s; animation-delay:0.7s; }
+    .ember:nth-child(4) { width:2px;height:2px; bottom:7%; left:44%; animation-duration:5.5s; animation-delay:2.1s; background: rgba(255,180,60,0.8); }
+    .ember:nth-child(5) { width:3px;height:3px; bottom:9%; left:55%; animation-duration:4.5s; animation-delay:3.2s; }
+    @keyframes riseEmber {
+      0%   { transform: translateY(0) translateX(0)   scale(1);   opacity: 0.9; }
+      35%  { transform: translateY(-90px) translateX(14px)  scale(0.7);  opacity: 0.6; }
+      65%  { transform: translateY(-180px) translateX(-8px)  scale(0.35); opacity: 0.25; }
+      100% { transform: translateY(-280px) translateX(6px)  scale(0);    opacity: 0; }
+    }
+    .hero__content { position: relative; z-index: 2; padding: 0 2rem; }
+    .hero__eyebrow {
+      font-size: 0.58rem; font-weight: 500; letter-spacing: 0.45em; text-transform: uppercase;
+      color: var(--terracotta); margin-bottom: 1.4rem;
+      display: flex; align-items: center; justify-content: center; gap: 1rem;
+      opacity: 0; animation: fadeUp 1s var(--ease) 0.4s forwards;
+    }
+    .hero__eyebrow::before,
+    .hero__eyebrow::after { content: ''; width: 36px; height: 1px; background: currentColor; opacity: 0.5; }
+    .hero__name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(5.5rem, 19vw, 17rem); font-weight: 300; line-height: 0.88;
+      letter-spacing: -0.01em; color: var(--cream);
+      opacity: 0; animation: fadeUp 1.2s var(--ease) 0.6s forwards;
+    }
+    .hero__name-i { color: var(--terracotta); font-style: italic; }
+    .hero__taqueria {
+      font-family: 'Jost', sans-serif; font-size: clamp(0.8rem, 2.2vw, 1.4rem);
+      font-weight: 300; letter-spacing: 0.72em; text-transform: uppercase; color: var(--sand);
+      margin-top: 0.6rem;
+      opacity: 0; animation: fadeUp 1s var(--ease) 0.9s forwards;
+    }
+    .hero__rule {
+      width: 50px; height: 1px; background: var(--terracotta);
+      margin: 2.4rem auto; opacity: 0; animation: fadeIn 1s 1.2s forwards;
+    }
+    .hero__script {
+      font-family: 'Sacramento', cursive;
+      font-size: clamp(1.5rem, 4.5vw, 3rem); color: var(--amber); margin-bottom: 3rem;
+      opacity: 0; animation: fadeUp 1s var(--ease) 1.3s forwards;
+    }
+    .hero__actions {
+      display: inline-flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center;
+      opacity: 0; animation: fadeUp 1s var(--ease) 1.6s forwards;
+    }
+    .hero__scroll {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px;
+      opacity: 0; animation: fadeIn 1s 2.2s forwards;
+    }
+    .hero__scroll span { font-size: 0.5rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--sand); opacity: 0.4; }
+    .scroll-caret {
+      width: 18px; height: 18px;
+      border-right: 1px solid rgba(232,213,176,0.35);
+      border-bottom: 1px solid rgba(232,213,176,0.35);
+      transform: rotate(45deg);
+      animation: caretBounce 2s ease-in-out infinite;
+    }
+    @keyframes caretBounce {
+      0%,100% { transform: rotate(45deg) translate(0,0);   opacity:0.35; }
+      50%      { transform: rotate(45deg) translate(4px,4px); opacity:0.9; }
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(32px) } to { opacity:1; transform:translateY(0) } }
+    @keyframes fadeIn  { from { opacity:0 } to { opacity:1 } }
+
+    /* ══ Buttons ══ */
+    .btn {
+      display: inline-block; padding: 1rem 2.4rem;
+      font-family: 'Jost', sans-serif; font-size: 0.62rem; font-weight: 500;
+      letter-spacing: 0.26em; text-transform: uppercase; transition: all 0.3s;
+    }
+    .btn-outline { border: 1px solid rgba(248,242,230,0.6); color: var(--cream); }
+    .btn-outline:hover { border-color: var(--cream); background: var(--cream); color: var(--charcoal); }
+    .btn-solid { background: var(--terracotta); color: var(--white); border: 1px solid var(--terracotta); }
+    .btn-solid:hover { background: var(--terracotta-pale); border-color: var(--terracotta-pale); }
+    .btn-amber { background: var(--amber); color: var(--charcoal); border: 1px solid var(--amber); }
+    .btn-amber:hover { background: var(--amber-pale); border-color: var(--amber-pale); }
+
+    /* ══ Marquee ══ */
+    .marquee-band {
+      background: var(--charcoal-mid);
+      border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider);
+      overflow: hidden; padding: 0.9rem 0;
+    }
+    .marquee-track {
+      display: flex; gap: 0; white-space: nowrap;
+      animation: marqueeRoll 40s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    .marquee-item {
+      font-size: 0.58rem; font-weight: 500; letter-spacing: 0.38em; text-transform: uppercase;
+      color: var(--sand); opacity: 0.55; padding: 0 1.8rem;
+    }
+    .marquee-dot { color: var(--terracotta); opacity: 1 !important; }
+    @keyframes marqueeRoll { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+
+    /* ══ Shared layout ══ */
+    section { padding: 7.5rem 0; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 3rem; }
+    .sec-label {
+      font-size: 0.52rem; font-weight: 600; letter-spacing: 0.48em; text-transform: uppercase;
+      color: var(--terracotta); display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.4rem;
+    }
+    .sec-label::after { content: ''; width: 28px; height: 1px; background: var(--terracotta); opacity: 0.5; }
+    .sec-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 300; line-height: 1.1; color: var(--cream);
+    }
+    .sec-title em { font-style: italic; color: var(--sand); }
+
+    /* ══ Reveal animations ══ */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); }
+    .reveal.vis { opacity: 1; transform: translateY(0); }
+    .stagger > * { opacity: 0; transform: translateY(28px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+    .stagger.vis > *:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0s; }
+    .stagger.vis > *:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:.1s; }
+    .stagger.vis > *:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:.2s; }
+    .stagger.vis > *:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:.3s; }
+    .stagger.vis > *:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:.4s; }
+    .stagger.vis > *:nth-child(6) { opacity:1; transform:translateY(0); transition-delay:.5s; }
+    .stagger.vis > *:nth-child(7) { opacity:1; transform:translateY(0); transition-delay:.6s; }
+    .stagger.vis > *:nth-child(8) { opacity:1; transform:translateY(0); transition-delay:.7s; }
+
+    /* ══ About ══ */
+    .about { background: var(--charcoal-mid); }
+    .about__grid { display: grid; grid-template-columns: 5fr 7fr; gap: 6rem; align-items: center; }
+    .about__frame {
+      aspect-ratio: 3/4; position: relative;
+      background:
+        radial-gradient(ellipse at 40% 35%, rgba(212,136,40,0.55) 0%, rgba(196,98,45,0.5) 30%,rgba(138,58,26,0.55) 55%, rgba(26,20,16,0.92) 100%);
+      overflow: hidden;
+    }
+    .about__frame::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 55% 65%, rgba(255,155,60,0.2) 0%, transparent 55%);
+    }
+    .about__frame-label {
+      position: absolute; bottom: 2rem; left: 2rem; right: 2rem;
+      font-family: 'Sacramento', cursive; font-size: 2.2rem; color: rgba(248,242,230,0.22);
+      pointer-events: none;
+    }
+    .about__corner {
+      position: absolute; bottom: -16px; right: -16px;
+      width: 100px; height: 100px; border: 1px solid var(--divider);
+    }
+    .about__corner::before { content: ''; position: absolute; inset: 10px; border: 1px solid var(--divider); }
+    .about__content { padding: 1rem 0; }
+    .about__script { font-family: 'Sacramento', cursive; font-size: 3rem; color: var(--amber); margin: 1.2rem 0 2rem; line-height: 1.2; }
+    .about__body { font-size: 0.95rem; font-weight: 300; line-height: 1.85; color: var(--sand); opacity: 0.82; margin-bottom: 1.4rem; }
+    .about__stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+      padding-top: 2.8rem; margin-top: 2.8rem; border-top: 1px solid var(--divider);
+    }
+    .stat-n {
+      font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300;
+      color: var(--terracotta); line-height: 1;
+    }
+    .stat-l { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--sand); opacity: 0.55; margin-top: 0.4rem; }
+
+    /* ══ Menu ══ */
+    .menu { background: var(--charcoal); }
+    .menu__head { text-align: center; margin-bottom: 4.5rem; }
+    .menu__head .sec-label { justify-content: center; }
+    .menu__head .sec-label::before { content: ''; width: 28px; height: 1px; background: var(--terracotta); opacity: 0.5; }
+    .menu__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+    .menu-card { position: relative; overflow: hidden; }
+    .menu-card__img {
+      aspect-ratio: 2/3; position: relative; overflow: hidden;
+      transition: transform 0.7s var(--ease);
+    }
+    .menu-card:hover .menu-card__img { transform: scale(1.05); }
+    .menu-card__bg { position: absolute; inset: 0; }
+    .menu-card:nth-child(1) .menu-card__bg { background: radial-gradient(ellipse at 40% 30%, rgba(255,155,60,0.4) 0%, transparent 50%), linear-gradient(155deg,#1A1410 0%,#4A1E10 35%,#9A3D18 65%,#C4622D 100%); }
+    .menu-card:nth-child(2) .menu-card__bg { background: radial-gradient(ellipse at 60% 40%, rgba(212,136,40,0.5) 0%, transparent 55%), linear-gradient(155deg,#1A1410 0%,#3A2208 35%,#7A4A18 65%,#D08828 100%); }
+    .menu-card:nth-child(3) .menu-card__bg { background: radial-gradient(ellipse at 50% 50%, rgba(122,158,126,0.5) 0%, transparent 55%), linear-gradient(155deg,#0C1210 0%,#1C3020 35%,#3A6A40 65%,#7A9E7E 100%); }
+    .menu-card:nth-child(4) .menu-card__bg { background: radial-gradient(ellipse at 35% 35%, rgba(196,98,45,0.5) 0%, transparent 50%), linear-gradient(155deg,#12080A 0%,#3A1010 35%,#7A2A20 65%,#C44040 100%); }
+    .menu-card:nth-child(5) .menu-card__bg { background: radial-gradient(ellipse at 55% 45%, rgba(212,136,40,0.4) 0%, transparent 50%), linear-gradient(155deg,#1A1410 0%,#4A2810 35%,#8A5020 65%,#C4862D 100%); }
+    .menu-card:nth-child(6) .menu-card__bg { background: radial-gradient(ellipse at 40% 60%, rgba(122,158,126,0.35) 0%, transparent 50%), linear-gradient(155deg,#0C1410 0%,#1A3418 35%,#3A7040 65%,#5A9E5E 100%); }
+    .menu-card:nth-child(7) .menu-card__bg { background: radial-gradient(ellipse at 50% 30%, rgba(196,98,45,0.35) 0%, transparent 50%), linear-gradient(155deg,#100808 0%,#280A0A 35%,#5A1A18 65%,#AA2E28 100%); }
+    .menu-card:nth-child(8) .menu-card__bg { background: radial-gradient(ellipse at 50% 50%, rgba(232,213,176,0.4) 0%, transparent 55%), linear-gradient(155deg,#141008 0%,#3A2A08 35%,#7A6020 65%,#D4A840 100%); }
+    .menu-card__shade {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(22,17,12,0.97) 0%, rgba(22,17,12,0.4) 45%, transparent 75%);
+    }
+    .menu-card__body { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.8rem 1.6rem; }
+    .menu-card__num { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.68rem; color: var(--terracotta); letter-spacing: 0.2em; margin-bottom: 0.4rem; }
+    .menu-card__name { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 400; color: var(--cream); line-height: 1.2; margin-bottom: 0.5rem; }
+    .menu-card__desc { font-size: 0.68rem; font-weight: 300; color: var(--sand); opacity: 0.68; line-height: 1.55; margin-bottom: 0.9rem; }
+    .menu-card__price { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-style: italic; color: var(--amber); }
+    .menu-card__badge {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      font-size: 0.48rem; letter-spacing: 0.22em; text-transform: uppercase;
+      background: rgba(22,17,12,0.7); color: var(--sand); padding: 0.3rem 0.7rem;
+      backdrop-filter: blur(8px); border: 1px solid rgba(232,213,176,0.12);
+    }
+    .menu__note { text-align: center; margin-top: 3.5rem; }
+    .menu__note p { font-size: 0.78rem; font-style: italic; color: var(--sand); opacity: 0.45; letter-spacing: 0.08em; margin-bottom: 1.8rem; }
+
+    /* ══ Craft ══ */
+    .craft { background: var(--charcoal-mid); }
+    .craft__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; }
+    .craft__visual { position: relative; }
+    .craft__fire-box {
+      aspect-ratio: 4/3; position: relative; overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 60%, rgba(255,140,40,0.55) 0%, rgba(196,98,45,0.45) 20%,rgba(138,58,26,0.5) 40%,rgba(60,20,10,0.8) 65%, var(--charcoal) 100%);
+    }
+    .craft__fire-box::before {
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(196,98,45,0.02) 3px, rgba(196,98,45,0.02) 4px);
+    }
+    .craft__fire-glow {
+      position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,160,60,0.35) 0%, transparent 70%);
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+    @keyframes glowPulse { 0%,100% { opacity:0.7; transform:translateX(-50%) scale(1); } 50% { opacity:1; transform:translateX(-50%) scale(1.15); } }
+    .craft__fire-text {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-family: 'Sacramento', cursive; font-size: 5rem; color: rgba(248,242,230,0.07); letter-spacing: 0.05em;
+    }
+    .craft__pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
+    .craft__pillar {
+      padding: 1.6rem; border: 1px solid var(--divider);
+      transition: border-color 0.3s;
+    }
+    .craft__pillar:hover { border-color: rgba(196,98,45,0.45); }
+    .craft__icon { font-size: 1.6rem; margin-bottom: 0.8rem; }
+    .craft__pillar-name { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--cream); margin-bottom: 0.4rem; }
+    .craft__pillar-text { font-size: 0.72rem; font-weight: 300; color: var(--sand); opacity: 0.62; line-height: 1.65; }
+
+    /* ══ Gallery ══ */
+    .gallery { background: var(--charcoal); }
+    .gallery__head { text-align: center; margin-bottom: 4rem; }
+    .gallery__head .sec-label { justify-content: center; }
+    .gallery__head .sec-label::before { content: ''; width: 28px; height: 1px; background: var(--terracotta); opacity: 0.5; }
+    .gallery__grid { display: grid; grid-template-columns: repeat(12,1fr); gap: 3px; }
+    .g-item { overflow: hidden; position: relative; }
+    .g-item:nth-child(1) { grid-column:1/6;   grid-row:1/3; }
+    .g-item:nth-child(2) { grid-column:6/9;   grid-row:1; }
+    .g-item:nth-child(3) { grid-column:9/13;  grid-row:1; }
+    .g-item:nth-child(4) { grid-column:6/9;   grid-row:2; }
+    .g-item:nth-child(5) { grid-column:9/13;  grid-row:2; }
+    .g-item:nth-child(6) { grid-column:1/5;   grid-row:3; }
+    .g-item:nth-child(7) { grid-column:5/9;   grid-row:3; }
+    .g-item:nth-child(8) { grid-column:9/13;  grid-row:3; }
+    .g-img {
+      width:100%; height:100%; min-height:200px;
+      transition: transform 0.7s var(--ease);
+    }
+    .g-item:nth-child(1)  .g-img { min-height: 440px; }
+    .g-item:hover .g-img { transform: scale(1.07); }
+    .g-item:nth-child(1) .g-img { background: radial-gradient(ellipse at 40% 40%, rgba(255,155,60,0.45) 0%, transparent 45%), linear-gradient(145deg,#16110C,#4A1E10,#9A3D18,#C4622D); }
+    .g-item:nth-child(2) .g-img { background: radial-gradient(ellipse at 55% 50%, rgba(212,136,40,0.5) 0%, transparent 55%), linear-gradient(145deg,#16110C,#3A2208,#7A5018,#D08828); }
+    .g-item:nth-child(3) .g-img { background: radial-gradient(ellipse at 45% 55%, rgba(122,158,126,0.5) 0%, transparent 55%), linear-gradient(145deg,#0A1210,#1A3020,#3A7040,#7A9E7E); }
+    .g-item:nth-child(4) .g-img { background: radial-gradient(ellipse at 50% 40%, rgba(196,98,45,0.5) 0%, transparent 55%), linear-gradient(145deg,#120808,#3A1010,#7A2A20,#C44040); }
+    .g-item:nth-child(5) .g-img { background: radial-gradient(ellipse at 40% 60%, rgba(232,213,176,0.4) 0%, transparent 55%), linear-gradient(145deg,#14100A,#3A2A10,#7A6020,#D4AA40); }
+    .g-item:nth-child(6) .g-img { background: radial-gradient(ellipse at 60% 45%, rgba(196,98,45,0.4) 0%, transparent 50%), linear-gradient(145deg,#16110C,#4A1E10,#8A3A1A,#C4622D); }
+    .g-item:nth-child(7) .g-img { background: radial-gradient(ellipse at 45% 55%, rgba(212,136,40,0.4) 0%, transparent 50%), linear-gradient(145deg,#120E08,#3A2808,#7A5818,#C08228); }
+    .g-item:nth-child(8) .g-img { background: radial-gradient(ellipse at 50% 50%, rgba(122,158,126,0.4) 0%, transparent 55%), linear-gradient(145deg,#0A1410,#1A3818,#386A38,#5A9E60); }
+    .g-label {
+      position: absolute; bottom: 1.2rem; left: 1.2rem;
+      font-family: 'Sacramento', cursive; font-size: 1.5rem;
+      color: rgba(248,242,230,0.25); pointer-events: none;
+    }
+    .g-hover {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(22,17,12,0.65) 0%, transparent 50%);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .g-item:hover .g-hover { opacity: 1; }
+    .gallery__insta { text-align: center; margin-top: 2.8rem; font-size: 0.75rem; color: var(--sand); opacity: 0.5; letter-spacing: 0.12em; }
+    .gallery__insta a { color: var(--amber); border-bottom: 1px solid rgba(208,136,40,0.3); padding-bottom: 2px; transition: border-color 0.3s; }
+    .gallery__insta a:hover { border-color: var(--amber); }
+
+    /* ══ Testimonials ══ */
+    .testimonials { background: var(--charcoal-light); padding: 6rem 0; }
+    .testimonials__inner { max-width: 780px; margin: 0 auto; text-align: center; }
+    .t-script { font-family: 'Sacramento', cursive; font-size: 1.8rem; color: var(--terracotta); margin-bottom: 3rem; }
+    .t-quotes { position: relative; min-height: 160px; }
+    .t-quote {
+      position: absolute; inset: 0; opacity: 0;
+      transition: opacity 0.7s ease; display: flex; flex-direction: column; align-items: center; gap: 1.2rem;
+    }
+    .t-quote.active { opacity: 1; position: relative; }
+    .t-mark { font-family: 'Cormorant Garamond', serif; font-size: 5rem; color: var(--terracotta); opacity: 0.25; line-height: 0.6; align-self: flex-start; margin-left: 2rem; }
+    .t-text { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300; font-style: italic; color: var(--cream); line-height: 1.55; }
+    .t-cite { font-size: 0.62rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--sand); opacity: 0.5; }
+    .t-stars { color: var(--amber); font-size: 0.75rem; letter-spacing: 0.2em; }
+    .t-dots { display: flex; gap: 0.7rem; justify-content: center; margin-top: 2.5rem; }
+    .t-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(248,242,230,0.2); transition: background 0.3s, transform 0.3s;
+    }
+    .t-dot.on { background: var(--terracotta); transform: scale(1.3); }
+
+    /* ══ Location ══ */
+    .location { background: var(--charcoal-mid); }
+    .location__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; }
+    .location__map {
+      aspect-ratio: 4/3; position: relative; overflow: hidden;
+      border: 1px solid var(--divider);
+      background:
+        radial-gradient(ellipse at 50% 50%, var(--charcoal-light) 0%, var(--charcoal) 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .location__map-inner { text-align: center; }
+    .map-pin { font-size: 2.5rem; opacity: 0.3; margin-bottom: 0.8rem; }
+    .map-hint { font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--sand); opacity: 0.35; }
+    .location__map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; filter: grayscale(65%) sepia(25%) brightness(0.65); }
+    .location__info { padding: 0.5rem 0; }
+    .loc-block { margin-bottom: 2.8rem; }
+    .loc-label { font-size: 0.52rem; font-weight: 600; letter-spacing: 0.42em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 0.7rem; }
+    .loc-val { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 300; color: var(--cream); line-height: 1.5; }
+    .hours-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(196,98,45,0.1); }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-day { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; color: var(--sand); }
+    .hours-time { font-size: 0.72rem; color: var(--sand); opacity: 0.6; }
+    .hours-time.closed { color: var(--terracotta); opacity: 0.6; font-style: italic; }
+
+    /* ══ CTA Band ══ */
+    .cta-band {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(196,98,45,0.25) 0%, transparent 65%),
+        var(--charcoal-light);
+      border-top: 1px solid var(--divider); padding: 6rem 0;
+    }
+    .cta-band__inner { max-width: 680px; margin: 0 auto; text-align: center; }
+    .cta-band__script { font-family: 'Sacramento', cursive; font-size: 2.4rem; color: var(--amber); margin-bottom: 1.2rem; }
+    .cta-band__title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 4.5vw, 3.4rem); font-weight: 300; color: var(--cream); line-height: 1.15; margin-bottom: 1.6rem; }
+    .cta-band__sub { font-size: 0.8rem; font-weight: 300; color: var(--sand); opacity: 0.6; letter-spacing: 0.08em; margin-bottom: 2.8rem; }
+    .cta-band__actions { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ══ WhatsApp ══ */
+    .wa-float { position: fixed; bottom: 2.4rem; right: 2.4rem; z-index: 300; display: flex; align-items: center; gap: 0.8rem; }
+    .wa-bubble {
+      background: var(--charcoal-mid); border: 1px solid var(--divider);
+      padding: 0.65rem 1.1rem; font-size: 0.62rem; letter-spacing: 0.08em;
+      color: var(--sand); white-space: nowrap; opacity: 0; transform: translateX(10px);
+      transition: opacity 0.3s, transform 0.3s; pointer-events: none;
+    }
+    .wa-float:hover .wa-bubble { opacity: 1; transform: translateX(0); }
+    .wa-btn {
+      width: 50px; height: 50px; border-radius: 50%; background: #25D366;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.3);
+    }
+    .wa-btn:hover { transform: scale(1.1); box-shadow: 0 8px 28px rgba(37,211,102,0.5); }
+    .wa-btn svg { width: 24px; height: 24px; fill: white; }
+
+    /* ══ Footer ══ */
+    footer { background: var(--charcoal); border-top: 1px solid var(--divider); padding: 5.5rem 0 3rem; }
+    .footer__grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 4rem; margin-bottom: 5rem; }
+    .footer__name { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: var(--cream); letter-spacing: 0.1em; }
+    .footer__sub { font-size: 0.5rem; letter-spacing: 0.42em; text-transform: uppercase; color: var(--terracotta); margin-top: 4px; margin-bottom: 1.2rem; }
+    .footer__tagline { font-family: 'Sacramento', cursive; font-size: 1.5rem; color: var(--amber); }
+    .footer__col-title { font-size: 0.52rem; font-weight: 600; letter-spacing: 0.42em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 1.6rem; }
+    .footer__list { list-style: none; }
+    .footer__list li { margin-bottom: 0.8rem; }
+    .footer__list a { font-size: 0.78rem; color: var(--sand); opacity: 0.55; transition: opacity 0.3s, color 0.3s; letter-spacing: 0.04em; }
+    .footer__list a:hover { opacity: 1; color: var(--amber); }
+    .footer__bottom {
+      border-top: 1px solid var(--divider); padding-top: 2.2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer__copy { font-size: 0.6rem; color: var(--sand); opacity: 0.28; letter-spacing: 0.1em; }
+    .footer__social { display: flex; gap: 1.8rem; }
+    .footer__social a { font-size: 0.58rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--sand); opacity: 0.38; transition: opacity 0.3s; }
+    .footer__social a:hover { opacity: 1; }
+
+    /* ══ Responsive ══ */
+    @media (max-width: 1100px) {
+      .menu__grid { grid-template-columns: repeat(2,1fr); }
+      .about__grid,
+      .craft__grid,
+      .location__grid { grid-template-columns: 1fr; gap: 3.5rem; }
+      .about__frame { max-height: 380px; aspect-ratio: unset; }
+      .craft__fire-box { max-height: 340px; aspect-ratio: unset; }
+      .footer__grid { grid-template-columns: 1fr 1fr; gap: 3rem; }
+    }
+    @media (max-width: 768px) {
+      section { padding: 5rem 0; }
+      .wrap { padding: 0 1.6rem; }
+      nav { padding: 1.2rem 1.6rem; }
+      nav.on { padding: 0.85rem 1.6rem; }
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .hero__taqueria { letter-spacing: 0.45em; }
+      .menu__grid { grid-template-columns: 1fr 1fr; }
+      .gallery__grid { grid-template-columns: 1fr 1fr; }
+      .g-item { grid-column: auto !important; grid-row: auto !important; }
+      .g-item .g-img { min-height: 160px !important; }
+      .craft__pillars { grid-template-columns: 1fr; }
+      .about__stats { grid-template-columns: repeat(3,1fr); }
+      .footer__grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .footer__bottom { flex-direction: column; gap: 1.2rem; text-align: center; }
+      .cta-band__actions { flex-direction: column; align-items: center; }
+      .location__map { aspect-ratio: 1; }
+    }
+    @media (max-width: 480px) {
+      .menu__grid { grid-template-columns: 1fr; }
+      .gallery__grid { grid-template-columns: 1fr; }
+      .hero__actions { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Progress -->
+  <div id="progress"></div>
+
+  <!-- Cursor -->
+  <div class="c-dot"></div>
+  <div class="c-ring"></div>
+
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="pre-name">Br<span>a</span>sa</div>
+    <div class="pre-bar"></div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mob" id="mob">
+    <a href="#about"    onclick="closeMob()">Our Story</a>
+    <div class="mob-divider"></div>
+    <a href="#menu"     onclick="closeMob()">Menu</a>
+    <div class="mob-divider"></div>
+    <a href="#craft"    onclick="closeMob()">The Craft</a>
+    <div class="mob-divider"></div>
+    <a href="#gallery"  onclick="closeMob()">Gallery</a>
+    <div class="mob-divider"></div>
+    <a href="#location" onclick="closeMob()">Find Us</a>
+    <div class="mob-divider"></div>
+    <a href="https://wa.me/971500000000" target="_blank" rel="noopener" style="color:var(--terracotta)">Reserve ↗</a>
+  </div>
+
+  <!-- Nav -->
+  <nav id="nav">
+    <a href="#home" class="nav-brand">
+      <span class="nav-brand__name">Brasa</span>
+      <span class="nav-brand__sub">Taqueria · Dubai</span>
+    </a>
+    <div class="nav-links">
+      <a href="#about">Our Story</a>
+      <a href="#menu">Menu</a>
+      <a href="#craft">The Craft</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#location">Find Us</a>
+    </div>
+    <a href="https://wa.me/971500000000" target="_blank" rel="noopener" class="nav-cta">Reserve a Table</a>
+    <button class="hamburger" id="ham" onclick="toggleMob()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero" id="home">
+    <div class="hero__fire" id="heroBg"></div>
+    <div class="hero__grain"></div>
+    <div class="embers">
+      <span class="ember"></span>
+      <span class="ember"></span>
+      <span class="ember"></span>
+      <span class="ember"></span>
+      <span class="ember"></span>
+    </div>
+    <div class="hero__content">
+      <p class="hero__eyebrow">Wood-Fired &nbsp;·&nbsp; Dubai, UAE</p>
+      <h1 class="hero__name">Br<span class="hero__name-i">a</span>sa</h1>
+      <p class="hero__taqueria">Taqueria</p>
+      <div class="hero__rule"></div>
+      <p class="hero__script">From Mexico to Dubai, with love</p>
+      <div class="hero__actions">
+        <a href="#menu"    class="btn btn-outline">Explore the Menu</a>
+        <a href="https://wa.me/971500000000" target="_blank" rel="noopener" class="btn btn-solid">Reserve a Table</a>
+      </div>
+    </div>
+    <div class="hero__scroll">
+      <span>Scroll</span>
+      <div class="scroll-caret"></div>
+    </div>
+  </section>
+
+  <!-- ══ MARQUEE ══ -->
+  <div class="marquee-band">
+    <div class="marquee-track">
+      <!-- duplicated for seamless loop -->
+      <span class="marquee-item">Birria de Res</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Al Pastor</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Nixtamal Tortillas</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Wood-Fired</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Heirloom Corn</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Carnitas Michoacanas</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Aguas Frescas</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Chiapas Coffee</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Salsas de Comal</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Birria de Res</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Al Pastor</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Nixtamal Tortillas</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Wood-Fired</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Heirloom Corn</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Carnitas Michoacanas</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Aguas Frescas</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Chiapas Coffee</span><span class="marquee-dot">✦</span>
+      <span class="marquee-item">Salsas de Comal</span><span class="marquee-dot">✦</span>
+    </div>
+  </div>
+
+  <!-- ══ ABOUT ══ -->
+  <section class="about" id="about">
+    <div class="wrap">
+      <div class="about__grid">
+        <div class="reveal">
+          <div class="about__frame" style="position:relative;">
+            <div class="about__frame-label">La Cocina</div>
+          </div>
+          <div class="about__corner"></div>
+        </div>
+        <div class="about__content reveal" style="transition-delay:0.15s">
+          <p class="sec-label">Our Story</p>
+          <h2 class="sec-title">A love letter to<br><em>Mexican tradition</em></h2>
+          <p class="about__script">Desde México con amor</p>
+          <p class="about__body">
+            Brasa was born from a single, stubborn belief: that Dubai deserved tacos made the way they are in Mexico — slowly, honestly, with reverence for the ingredient.
+          </p>
+          <p class="about__body">
+            We source heirloom corn directly from Mexican farms in Chiapas and Guerrero, nixtamalise and grind it in-house each morning, then hand-press every tortilla to order. Our meats are wood-fired, our salsas ground fresh daily, our aguas frescas made from stone fruit and dried flowers.
+          </p>
+          <p class="about__body">
+            This is not a chain. This is a cantina. Come hungry, stay late.
+          </p>
+          <div class="about__stats stagger">
+            <div>
+              <div class="stat-n" data-target="100" data-suffix="%">0%</div>
+              <div class="stat-l">Scratch-made daily</div>
+            </div>
+            <div>
+              <div class="stat-n" data-target="3" data-suffix="">0</div>
+              <div class="stat-l">Mexican states sourced from</div>
+            </div>
+            <div>
+              <div class="stat-n" data-target="0" data-suffix="">Est. 2022</div>
+              <div class="stat-l">In the heart of the city</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ MENU ══ -->
+  <section class="menu" id="menu">
+    <div class="wrap">
+      <div class="menu__head reveal">
+        <p class="sec-label">Signature Dishes</p>
+        <h2 class="sec-title">The menu</h2>
+        <p style="font-size:0.82rem;color:var(--sand);opacity:0.5;margin-top:1rem;letter-spacing:0.06em;font-style:italic;">All tacos served on hand-pressed nixtamal tortillas · ask your server for daily specials</p>
+      </div>
+      <div class="menu__grid stagger">
+        <div class="menu-card">
+          <div class="menu-card__img">
+            <div class="menu-card__bg"></div>
+            <div class="menu-card__shade"></div>
+          </div>
+          <div class="menu-card__body">
+            <p class="menu-card__num">01 · Taco</p>
+            <h3 class="menu-card__name">Birria de Res</h3>
+            <p class="menu-card__desc">24-hour wagyu birria, rich consommé dip, pickled white onion, fresh cilantro</p>
+            <p class="menu-card__price">AED 42</p>
+          </div>
+          <span class="menu-card__badge">Signature</span>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card__img">
+            <div class="menu-card__bg"></div>
+            <div class="menu-card__shade"></div>
+          </div>
+          <div class="menu-card__body">
+            <p class="menu-card__num">02 · Taco</p>
+            <h3 class="menu-card__name">Al Pastor</h3>
+            <p class="menu-card__desc">Achiote-marinated heritage pork, caramelised pineapple, cilantro, onion</p>
+            <p class="menu-card__price">AED 36</p>
+          </div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card__img">
+            <div class="menu-card__bg"></div>
+            <div class="menu-card__shade"></div>
+          </div>
+          <div class="menu-card__body">
+            <p class="menu-card__num">03 · Taco</p>
+            <h3 class="menu-card__name">Rajas con Queso</h3>
+            <p class="menu-card__desc">Roasted poblano strips, Oaxacan string cheese, Mexican crema</p>
+            <p class="menu-card__price">AED 28</p>
+          </div>
+          <span class="menu-card__badge">Vegetarian</span>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card__img">
+            <div class="menu-card__bg"></div>
+            <div class="menu-card__shade"></div>
+          </div>
+          <div class="menu-card__body">
+            <p class="menu-card__num">04 · Taco</p>
+            <h3 class="menu-card__name">Barbacoa de Borrego</h3>
+            <p class="menu-card__desc">Wood-pit slow lamb, salsa verde tatemada, queso fresco, pickled onion</p>
+            <p class="menu-card__price">AED 44</p>
+          </div>
+          <span class="menu-card__badge">Weekend Only</span>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card__img">
+            <div class="menu-card__bg"></div>
+            <div class="menu-card__shade"></div>
+          </div>
+          <div class="menu-card__body">
+            <p class="menu-card__num">05 · Taco</p>
+            <h3 class="menu-card__name">Carnitas Michoacanas</h3>
+            <p class="menu-card__desc">12-hour copper-pot pork, chipotle crema, pickled jalapeño, fresh lime</p>
+            <p class="menu-card__price">AED 36</p>
+          </div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card__img">
+            <div class="menu-card__bg"></div>
+            <div class="menu-card__shade"></div>
+          </div>
+          <div class="menu-card__body">
+            <p class="menu-card__num">06 · Taco</p>
+            <h3 class="menu-card__name">Tinga de Pollo</h3>
+            <p class="menu-card__desc">Free-range chipotle chicken, roasted tomatillo, avocado crema</p>
+            <p class="menu-card__price">AED 32</p>
+          </div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card__img">
+            <div class="menu-card__bg"></div>
+            <div class="menu-card__shade"></div>
+          </div>
+          <div class="menu-card__body">
+            <p class="menu-card__num">07 · Sides</p>
+            <h3 class="menu-card__name">Elote Callejero</h3>
+            <p class="menu-card__desc">Wood-grilled corn, cotija, chilli butter, tajín, lime zest</p>
+            <p class="menu-card__price">AED 34</p>
+          </div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card__img">
+            <div class="menu-card__bg"></div>
+            <div class="menu-card__shade"></div>
+          </div>
+          <div class="menu-card__body">
+            <p class="menu-card__num">08 · Drinks</p>
+            <h3 class="menu-card__name">Agua de Jamaica</h3>
+            <p class="menu-card__desc">Hibiscus flower agua fresca, tamarind, fresh lime, stone fruit</p>
+            <p class="menu-card__price">AED 24</p>
+          </div>
+          <span class="menu-card__badge">House-made</span>
+        </div>
+      </div>
+      <div class="menu__note reveal">
+        <p>Full menu available for delivery · Catering enquiries welcome</p>
+        <a href="https://wa.me/971500000000" target="_blank" rel="noopener" class="btn btn-outline">Order on WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CRAFT ══ -->
+  <section class="craft" id="craft">
+    <div class="wrap">
+      <div class="craft__grid">
+        <div class="craft__visual reveal">
+          <div class="craft__fire-box">
+            <div class="craft__fire-glow"></div>
+            <div class="craft__fire-text">Fuego</div>
+          </div>
+        </div>
+        <div class="reveal" style="transition-delay:0.15s">
+          <p class="sec-label">The Craft</p>
+          <h2 class="sec-title">Made the<br><em>old way</em></h2>
+          <p style="font-size:0.95rem;font-weight:300;line-height:1.85;color:var(--sand);opacity:0.8;margin:1.8rem 0 0.5rem;">
+            In Mexico, cooking is not a shortcut. It is a ceremony. We honour that ceremony every single day inside our open kitchen.
+          </p>
+          <p style="font-size:0.95rem;font-weight:300;line-height:1.85;color:var(--sand);opacity:0.8;margin-bottom:0.5rem;">
+            Our heirloom corn travels directly from small farms in Chiapas — the same varieties cultivated for millennia. We nixtamalise the kernels overnight in cal, grind them at dawn, and your tortilla is pressed from living masa, never from a package.
+          </p>
+          <div class="craft__pillars stagger">
+            <div class="craft__pillar">
+              <div class="craft__icon">🌽</div>
+              <h4 class="craft__pillar-name">Heirloom Corn</h4>
+              <p class="craft__pillar-text">Sourced directly from Chiapas & Guerrero — ancient varieties you won't find in a supermarket.</p>
+            </div>
+            <div class="craft__pillar">
+              <div class="craft__icon">🔥</div>
+              <h4 class="craft__pillar-name">Wood Fire</h4>
+              <p class="craft__pillar-text">Every protein meets the wood-fired grill. No gas. The smoke is not decoration.</p>
+            </div>
+            <div class="craft__pillar">
+              <div class="craft__icon">🫙</div>
+              <h4 class="craft__pillar-name">Nixtamalisation</h4>
+              <p class="craft__pillar-text">We soak and cook our corn in cal each night. The masa is ground in-house, pressed to order.</p>
+            </div>
+            <div class="craft__pillar">
+              <div class="craft__icon">☕</div>
+              <h4 class="craft__pillar-name">Chiapas Coffee</h4>
+              <p class="craft__pillar-text">House-roasted single-origin coffee from the highlands of Chiapas and Guerrero.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ GALLERY ══ -->
+  <section class="gallery" id="gallery">
+    <div class="wrap">
+      <div class="gallery__head reveal">
+        <p class="sec-label">The Cantina</p>
+        <h2 class="sec-title">Life at <em>Brasa</em></h2>
+      </div>
+      <div class="gallery__grid stagger">
+        <div class="g-item">
+          <div class="g-img"></div>
+          <span class="g-label">La Birria</span>
+          <div class="g-hover"></div>
+        </div>
+        <div class="g-item">
+          <div class="g-img"></div>
+          <span class="g-label">El Comal</span>
+          <div class="g-hover"></div>
+        </div>
+        <div class="g-item">
+          <div class="g-img"></div>
+          <span class="g-label">Los Chiles</span>
+          <div class="g-hover"></div>
+        </div>
+        <div class="g-item">
+          <div class="g-img"></div>
+          <span class="g-label">La Salsa</span>
+          <div class="g-hover"></div>
+        </div>
+        <div class="g-item">
+          <div class="g-img"></div>
+          <span class="g-label">La Masa</span>
+          <div class="g-hover"></div>
+        </div>
+        <div class="g-item">
+          <div class="g-img"></div>
+          <span class="g-label">El Pastor</span>
+          <div class="g-hover"></div>
+        </div>
+        <div class="g-item">
+          <div class="g-img"></div>
+          <span class="g-label">Mezcal</span>
+          <div class="g-hover"></div>
+        </div>
+        <div class="g-item">
+          <div class="g-img"></div>
+          <span class="g-label">El Elote</span>
+          <div class="g-hover"></div>
+        </div>
+      </div>
+      <p class="gallery__insta reveal" style="margin-top:2.8rem">
+        Follow us on Instagram <a href="https://www.instagram.com/brasacantina" target="_blank" rel="noopener">@brasacantina</a> for daily specials &amp; behind-the-scenes
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ TESTIMONIALS ══ -->
+  <section class="testimonials">
+    <div class="wrap">
+      <div class="testimonials__inner reveal">
+        <p class="t-script">Lo que dicen nuestros amigos</p>
+        <div class="t-quotes" id="tQuotes">
+          <div class="t-quote active">
+            <div class="t-mark">"</div>
+            <p class="t-text">The birria here is unlike anything else in Dubai. You can taste the love that went into every single element — the consommé, the tortilla, the salsa. Brasa is a revelation.</p>
+            <p class="t-stars">★ ★ ★ ★ ★</p>
+            <p class="t-cite">Sofia R. · Dubai</p>
+          </div>
+          <div class="t-quote">
+            <div class="t-mark">"</div>
+            <p class="t-text">I've lived in Mexico City. I know what a taco should taste like. Brasa is the real thing. The nixtamal tortilla makes all the difference — you can actually feel the corn.</p>
+            <p class="t-stars">★ ★ ★ ★ ★</p>
+            <p class="t-cite">Marco A. · Mexico City & Dubai</p>
+          </div>
+          <div class="t-quote">
+            <div class="t-mark">"</div>
+            <p class="t-text">The terrace at sunset, a cold Jamaica, a plate of al pastor — I have been coming every week for six months and I never get bored. This place has soul.</p>
+            <p class="t-stars">★ ★ ★ ★ ★</p>
+            <p class="t-cite">Layla H. · Dubai</p>
+          </div>
+        </div>
+        <div class="t-dots" id="tDots">
+          <button class="t-dot on" data-i="0"></button>
+          <button class="t-dot" data-i="1"></button>
+          <button class="t-dot" data-i="2"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ LOCATION ══ -->
+  <section class="location" id="location">
+    <div class="wrap">
+      <div class="location__grid">
+        <div class="reveal">
+          <div class="location__map">
+            <!-- Concept design — real map embed omitted; swap in a Google Maps embed for production -->
+            <div class="location__map-inner" style="position:relative;z-index:1" id="mapFallback">
+              <div class="map-pin">📍</div>
+              <p class="map-hint">Dubai, UAE</p>
+            </div>
+          </div>
+        </div>
+        <div class="reveal" style="transition-delay:0.15s">
+          <p class="sec-label">Find Us</p>
+          <h2 class="sec-title" style="margin-bottom:3rem">Come in,<br><em>sit down</em></h2>
+          <div class="loc-block">
+            <p class="loc-label">Address</p>
+            <p class="loc-val">Beachfront District<br>Dubai, UAE</p>
+          </div>
+          <div class="loc-block">
+            <p class="loc-label">Reservations & Enquiries</p>
+            <p class="loc-val">
+              <a href="tel:+97140000000" style="transition:color 0.3s" onmouseover="this.style.color='var(--amber)'" onmouseout="this.style.color=''">+971 4 000 0000</a><br>
+              <a href="https://wa.me/971500000000" target="_blank" rel="noopener" style="font-size:0.85rem;color:var(--terracotta);transition:color 0.3s" onmouseover="this.style.color='var(--amber)'" onmouseout="this.style.color='var(--terracotta)'">WhatsApp us →</a>
+            </p>
+          </div>
+          <div class="loc-block">
+            <p class="loc-label">Opening Hours</p>
+            <div class="hours-row"><span class="hours-day">Tuesday – Friday</span><span class="hours-time">1:00 PM – 11:00 PM</span></div>
+            <div class="hours-row"><span class="hours-day">Saturday – Sunday</span><span class="hours-time">12:00 PM – 11:00 PM</span></div>
+            <div class="hours-row"><span class="hours-day">Monday</span><span class="hours-time closed">Closed</span></div>
+          </div>
+          <div class="loc-block">
+            <p class="loc-label">Services</p>
+            <p class="loc-val" style="font-size:1rem;line-height:1.7;">Dine-in · Pick-up Window<br>Delivery via partner apps · Catering</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CTA BAND ══ -->
+  <div class="cta-band">
+    <div class="cta-band__inner reveal">
+      <p class="cta-band__script">¿Tienes hambre?</p>
+      <h2 class="cta-band__title">Your table is waiting</h2>
+      <p class="cta-band__sub">Walk in, call ahead, or message us on WhatsApp. We'll make sure you're fed.</p>
+      <div class="cta-band__actions">
+        <a href="https://wa.me/971500000000" target="_blank" rel="noopener" class="btn btn-solid">Message on WhatsApp</a>
+        <a href="tel:+97140000000" class="btn btn-outline">Call +971 4 000 0000</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div class="wrap">
+      <div class="footer__grid">
+        <div>
+          <p class="footer__name">Brasa</p>
+          <p class="footer__sub">Taqueria · Dubai</p>
+          <p class="footer__tagline">From Mexico to Dubai, with love</p>
+        </div>
+        <div>
+          <p class="footer__col-title">Navigate</p>
+          <ul class="footer__list">
+            <li><a href="#about">Our Story</a></li>
+            <li><a href="#menu">Signature Menu</a></li>
+            <li><a href="#craft">The Craft</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#location">Location & Hours</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-title">Connect</p>
+          <ul class="footer__list">
+            <li><a href="https://www.instagram.com/brasacantina" target="_blank" rel="noopener">Instagram @brasacantina</a></li>
+            <li><a href="https://wa.me/971500000000" target="_blank" rel="noopener">WhatsApp Reservations</a></li>
+            <li><a href="tel:+97140000000">+971 4 000 0000</a></li>
+            <li><a href="https://www.brasacantina.com" target="_blank" rel="noopener">brasacantina.com</a></li>
+          </ul>
+          <p style="margin-top:2rem">
+            <span class="footer__col-title">Catering</span>
+          </p>
+          <p style="font-size:0.78rem;color:var(--sand);opacity:0.5;margin-top:0.8rem;line-height:1.6;font-weight:300;">Custom catering for events in Dubai &amp; the UAE. Message us to discuss your occasion.</p>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">&copy; 2026 Brasa · Concept design · Dubai, UAE</p>
+        <div class="footer__social">
+          <a href="https://www.instagram.com/brasacantina" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://wa.me/971500000000" target="_blank" rel="noopener">WhatsApp</a>
+          <a href="https://www.brasacantina.com" target="_blank" rel="noopener">Website</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══ WHATSAPP FLOAT ══ -->
+  <a class="wa-float" href="https://wa.me/971500000000" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <span class="wa-bubble">Reserve a table →</span>
+    <div class="wa-btn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+    </div>
+  </a>
+
+  <script>
+    /* ── Preloader ── */
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('preloader').classList.add('out');
+        document.body.style.overflow = '';
+      }, 1900);
+    });
+
+    /* ── Scroll Progress ── */
+    const prog = document.getElementById('progress');
+    function updateProg() {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      prog.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+    }
+    window.addEventListener('scroll', updateProg, { passive: true });
+
+    /* ── Custom Cursor ── */
+    const dot  = document.querySelector('.c-dot');
+    const ring = document.querySelector('.c-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    window.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    });
+    (function tick() {
+      rx += (mx - rx) * 0.11; ry += (my - ry) * 0.11;
+      ring.style.left = rx + 'px'; ring.style.top  = ry + 'px';
+      requestAnimationFrame(tick);
+    })();
+
+    /* ── Nav scroll ── */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('on', window.scrollY > 60), { passive: true });
+
+    /* ── Hero parallax (firelight glow) ── */
+    const heroBg = document.getElementById('heroBg');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY < window.innerHeight * 1.2) {
+        heroBg.style.transform = `translateY(${window.scrollY * 0.38}px)`;
+      }
+    }, { passive: true });
+
+    /* ── Mobile menu ── */
+    const mob  = document.getElementById('mob');
+    const ham  = document.getElementById('ham');
+    const spans = ham.querySelectorAll('span');
+    let mobOpen = false;
+    function toggleMob() {
+      mobOpen = !mobOpen;
+      mob.classList.toggle('open', mobOpen);
+      spans[0].style.transform = mobOpen ? 'rotate(45deg) translate(4px,5px)'  : '';
+      spans[1].style.opacity   = mobOpen ? '0' : '';
+      spans[2].style.transform = mobOpen ? 'rotate(-45deg) translate(4px,-5px)' : '';
+    }
+    function closeMob() {
+      mobOpen = false;
+      mob.classList.remove('open');
+      spans.forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+    }
+
+    /* ── Scroll reveals ── */
+    const revObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); revObs.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal, .stagger').forEach(el => revObs.observe(el));
+
+    /* ── Counter animation ── */
+    function runCounter(el) {
+      const target   = parseInt(el.dataset.target);
+      const suffix   = el.dataset.suffix || '';
+      if (isNaN(target) || target === 0) return;
+      const duration = 1800;
+      const step     = target / (duration / 14);
+      let current    = 0;
+      const id = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(id); }
+        el.textContent = Math.floor(current) + suffix;
+      }, 14);
+    }
+    const cntObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { runCounter(e.target); cntObs.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-target]').forEach(el => cntObs.observe(el));
+
+    /* ── Testimonial rotator ── */
+    const quotes = document.querySelectorAll('.t-quote');
+    const dots   = document.querySelectorAll('.t-dot');
+    let tCurrent = 0;
+    function showT(i) {
+      quotes[tCurrent].classList.remove('active');
+      dots[tCurrent].classList.remove('on');
+      tCurrent = i;
+      quotes[tCurrent].classList.add('active');
+      dots[tCurrent].classList.add('on');
+    }
+    dots.forEach(d => d.addEventListener('click', () => showT(parseInt(d.dataset.i))));
+    let tTimer = setInterval(() => showT((tCurrent + 1) % quotes.length), 5500);
+    document.getElementById('tQuotes').addEventListener('mouseenter', () => clearInterval(tTimer));
+    document.getElementById('tQuotes').addEventListener('mouseleave', () => { tTimer = setInterval(() => showT((tCurrent + 1) % quotes.length), 5500); });
+
+    /* ── Map iframe fallback ── */
+    const iframe = document.querySelector('.location__map iframe');
+    if (iframe) {
+      iframe.addEventListener('error', () => {
+        iframe.style.display = 'none';
+        document.getElementById('mapFallback').style.display = 'block';
+      });
+    }
+  </script>
+</body>
+</html>
