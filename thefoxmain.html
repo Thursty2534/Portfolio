@@ -42,15 +42,64 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; font-size: 16px; }
 
+    /* base background on <html> (slightly lighter) so the fixed/absolute art layer stays visible */
+    html {
+      background:
+        radial-gradient(ellipse 95% 60% at 50% -5%, rgba(201,146,42,0.05), transparent 60%),
+        linear-gradient(180deg, #141a21 0%, #0f141a 55%, #0c1016 100%);
+    }
     body {
-      background: var(--ink);
+      background: transparent;
       color: var(--text-primary);
       font-family: var(--font-body);
       font-weight: 300;
       line-height: 1.7;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      position: relative;
     }
+
+    /* ─── ANIMATED ABSTRACT BACKGROUND (ref: abstract art/art1 & art2) ─── */
+    .art-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+    .art-shape { position: absolute; will-change: transform; }
+    .art-shape__i { position: relative; width: 100%; height: 100%; will-change: transform; }
+
+    .art-sphere .art-shape__i {
+      border-radius: 50%;
+      background: radial-gradient(circle at 34% 30%, var(--gold-pale) 0%, var(--gold) 40%, var(--gold-deep) 72%, #533a0e 100%);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.55), inset 0 0 50px rgba(255,255,255,0.05);
+    }
+    .art-ring .art-shape__i {
+      border-radius: 50%;
+      border: 1px solid rgba(201,146,42,0.35);
+      background: radial-gradient(circle at 40% 38%, rgba(201,146,42,0.06), transparent 62%);
+    }
+    .art-ring .art-shape__i::before { content:''; position:absolute; inset: 10%; border-radius:50%; border:1px solid rgba(201,146,42,0.16); }
+    .art-ring .art-shape__i::after  { content:''; position:absolute; inset: 24%; border-radius:50%; border:1px solid rgba(201,146,42,0.10); }
+
+    .art-lines .art-shape__i { display: flex; gap: 12px; justify-content: center; }
+    .art-lines span { display:block; width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, rgba(201,146,42,0.55) 16%, rgba(201,146,42,0.55) 84%, transparent); }
+
+    .art-dots .art-shape__i {
+      background-image: radial-gradient(rgba(201,146,42,0.6) 1.1px, transparent 1.6px);
+      background-size: 13px 13px;
+    }
+
+    @keyframes artFloatA { 0%,100%{transform:translate(0,0)} 50%{transform:translate(16px,-28px)} }
+    @keyframes artFloatB { 0%,100%{transform:translate(0,0) rotate(0deg)} 50%{transform:translate(-20px,22px) rotate(6deg)} }
+    @keyframes artFloatC { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(14px,16px) scale(1.06)} }
+    @keyframes artSway  { 0%,100%{transform:translateX(0) skewX(0deg)} 50%{transform:translateX(12px) skewX(-3deg)} }
+    @keyframes artSpin  { to { transform: rotate(360deg) } }
+
+    .art-fa  { animation: artFloatA 9s  ease-in-out infinite; }
+    .art-fb  { animation: artFloatB 13s ease-in-out infinite; }
+    .art-fc  { animation: artFloatC 15s ease-in-out infinite; }
+    .art-fa2 { animation: artFloatA 17s ease-in-out infinite; }
+    .art-sway{ animation: artSway 8s ease-in-out infinite; }
+    .art-spin{ animation: artSpin 60s linear infinite; }
+
+    @media (max-width: 760px) { .art-bg { opacity: 0.5; } .art-hide-sm { display: none; } }
+    @media (prefers-reduced-motion: reduce) { .art-shape__i { animation: none !important; } }
 
     img { display: block; max-width: 100%; }
     a   { color: inherit; text-decoration: none; }
@@ -245,9 +294,9 @@
     .hero__bg {
       position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse 70% 55% at 60% 45%, rgba(201,146,42,0.07) 0%, transparent 65%),
-        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(8,11,15,0.98) 0%, transparent 70%),
-        linear-gradient(160deg, #080B0F 0%, #0e1318 50%, #080B0F 100%);
+        radial-gradient(ellipse 70% 55% at 60% 45%, rgba(201,146,42,0.08) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(8,11,15,0.55) 0%, transparent 70%),
+        linear-gradient(160deg, rgba(20,26,33,0.5) 0%, rgba(14,19,24,0.28) 50%, rgba(12,16,22,0.5) 100%);
     }
 
     /* animated grid */
@@ -364,7 +413,7 @@
       padding: 8rem 0;
       position: relative;
     }
-    .section--alt { background: var(--ink-mid); }
+    .section--alt { background: rgba(14,19,24,0.80); }
     .section--bordered::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
       background: linear-gradient(90deg, transparent, var(--gold), transparent);
@@ -610,7 +659,7 @@
 
     /* ─── STATS STRIP ─────────────────────────────────────────── */
     .stats-strip {
-      background: var(--ink-light);
+      background: rgba(21,28,36,0.82);
       border-top: 1px solid var(--divider);
       border-bottom: 1px solid var(--divider);
       padding: 4rem 0;
@@ -797,6 +846,20 @@
   </style>
 </head>
 <body>
+
+<!-- ─── ANIMATED ABSTRACT BACKGROUND (ref: abstract art/art1 & art2) ─── -->
+<div class="art-bg" id="artBg" aria-hidden="true">
+  <div class="art-shape art-sphere" data-art-speed="-0.14" style="top:-4vh; right:-3vw; width:32vw; max-width:440px; aspect-ratio:1; opacity:0.5;"><div class="art-shape__i art-fa"></div></div>
+  <div class="art-shape art-ring art-hide-sm" data-art-speed="0.05" style="top:34vh; left:5vw; width:30vw; max-width:420px; aspect-ratio:1; opacity:0.7;"><div class="art-shape__i art-spin"></div></div>
+  <div class="art-shape art-lines art-hide-sm" data-art-speed="0.12" style="top:6vh; left:32vw; width:64px; height:44vh; opacity:0.55;"><div class="art-shape__i art-sway"><span></span><span></span><span></span><span></span><span></span></div></div>
+  <div class="art-shape art-sphere" data-art-speed="0.18" style="top:118vh; left:-3vw; width:15vw; max-width:210px; aspect-ratio:1; opacity:0.55;"><div class="art-shape__i art-fb"></div></div>
+  <div class="art-shape art-dots art-hide-sm" data-art-speed="-0.1" style="top:96vh; right:7vw; width:150px; height:190px; opacity:0.5;"><div class="art-shape__i art-fa2"></div></div>
+  <div class="art-shape art-sphere art-hide-sm" data-art-speed="-0.22" style="top:150vh; right:14vw; width:6vw; max-width:84px; aspect-ratio:1; opacity:0.6;"><div class="art-shape__i art-fc"></div></div>
+  <div class="art-shape art-ring art-hide-sm" data-art-speed="0.16" style="top:210vh; right:6vw; width:22vw; max-width:300px; aspect-ratio:1; opacity:0.5;"><div class="art-shape__i art-spin"></div></div>
+  <div class="art-shape art-sphere" data-art-speed="0.1" style="top:256vh; left:8vw; width:13vw; max-width:180px; aspect-ratio:1; opacity:0.5;"><div class="art-shape__i art-fc"></div></div>
+  <div class="art-shape art-lines art-hide-sm" data-art-speed="-0.08" style="top:300vh; right:24vw; width:50px; height:38vh; opacity:0.45;"><div class="art-shape__i art-sway"><span></span><span></span><span></span><span></span></div></div>
+  <div class="art-shape art-sphere art-hide-sm" data-art-speed="0.2" style="top:340vh; left:16vw; width:5vw; max-width:70px; aspect-ratio:1; opacity:0.6;"><div class="art-shape__i art-fa"></div></div>
+</div>
 
 <!-- ─── PRELOADER ─────────────────────────────────────────────── -->
 <div class="preloader" id="preloader">
@@ -1056,7 +1119,7 @@
             Motion Concept
           </div>
           <h3 class="work-card__title">Alex Rivera — Motion Portfolio</h3>
-          <p class="work-card__desc">A Y2K-chrome designer portfolio built as a motion study. GSAP, ScrollTrigger and Lenis power a magnetic custom cursor, horizontal scroll gallery, pinned stats, chrome text reveals and smooth momentum scrolling.</p>
+          <p class="work-card__desc">A designer &amp; developer portfolio built as a motion study — deep indigo and electric blue with chrome split-text headlines. GSAP, ScrollTrigger and Lenis power a magnetic custom cursor, marquee strips, a horizontal scroll gallery, pinned scroll-scrub sections and smooth momentum scrolling.</p>
           <span class="work-card__view">View Project →</span>
           <div class="work-card__corner"></div>
         </a>
@@ -1356,6 +1419,37 @@
       orb.style.transform = `translateY(calc(-50% + ${window.scrollY * 0.18}px))`;
     }
   }, { passive: true });
+
+  /* ─── ANIMATED ABSTRACT BACKGROUND: per-shape scroll parallax ─── */
+  (function () {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const artBg  = document.getElementById('artBg');
+    const shapes = artBg ? [...artBg.querySelectorAll('.art-shape[data-art-speed]')] : [];
+    if (!artBg || !shapes.length) return;
+
+    // size the absolute layer to the full document so shapes sit at real scroll depths
+    const sizeLayer = () => { artBg.style.height = document.documentElement.scrollHeight + 'px'; };
+    sizeLayer();
+    window.addEventListener('load', sizeLayer);
+    window.addEventListener('resize', sizeLayer);
+    setTimeout(sizeLayer, 1200); // after preloader/fonts settle
+
+    if (reduce) return; // float + parallax off; shapes stay put
+
+    let ticking = false;
+    const update = () => {
+      const y = window.scrollY;
+      for (const s of shapes) {
+        const sp = parseFloat(s.dataset.artSpeed) || 0;
+        s.style.transform = `translate3d(0, ${y * sp}px, 0)`;
+      }
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+  })();
 </script>
 
 </body>
